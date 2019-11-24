@@ -3,7 +3,7 @@ set -e
 
 docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
-ehco "Build Prolamb Docker Image"
+echo "Build Prolamb Docker Image"
 docker build --tag prolamb:latest -f build.Dockerfile . &> /dev/null
 cd test/src
 
@@ -22,7 +22,7 @@ cd ..
 # For provided it searches for .sh by default but we have a .pl so we edit that in
 # the source and pass it in
 cd localstack
-ehco "Build modified localstack image"
+echo "Build modified localstack image"
 docker build -f localstack.Dockerfile --tag prolamb/localstack:latest . &> /dev/null
 cd ../..
 docker run -p 4574:4574 -v /var/run/docker.sock:/var/run/docker.sock \
