@@ -1,16 +1,16 @@
 #! /usr/bin/env bash
 set -e
 
-docker rm -f prolamb-localstack || true
+docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
-docker build --tag prolamb:latest -f build.Dockerfile .
+docker build --tag prolamb:latest -f build.Dockerfile . &> /dev/null
 cd test/src
 
 dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
 do
     cd $dir && rm -f bundle.zip || true
-    docker run --rm -v $PWD:/dist prolamb:latest
+    docker run --rm -v $PWD:/dist prolamb:latest &> /dev/null
     cd ..
 done
 cd ..
@@ -20,7 +20,7 @@ cd ..
 # For provided it searches for .sh by default but we have a .pl so we edit that in
 # the source and pass it in
 cd localstack
-docker build -f localstack.Dockerfile --tag prolamb/localstack:latest .
+docker build -f localstack.Dockerfile --tag prolamb/localstack:latest . &> /dev/null
 cd ../..
 docker run -p 4574:4574 -v /var/run/docker.sock:/var/run/docker.sock \
     --privileged --name prolamb-localstack \
