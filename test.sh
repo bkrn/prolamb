@@ -3,12 +3,14 @@ set -e
 
 docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
+ehco "Build Prolamb Docker Image"
 docker build --tag prolamb:latest -f build.Dockerfile . &> /dev/null
 cd test/src
 
 dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
 do
+    echo "Build ${dir} test lambda .zip"
     cd $dir && rm -f bundle.zip || true
     docker run --rm -v $PWD:/dist prolamb:latest &> /dev/null
     cd ..
@@ -20,19 +22,22 @@ cd ..
 # For provided it searches for .sh by default but we have a .pl so we edit that in
 # the source and pass it in
 cd localstack
+ehco "Build modified localstack image"
 docker build -f localstack.Dockerfile --tag prolamb/localstack:latest . &> /dev/null
 cd ../..
 docker run -p 4574:4574 -v /var/run/docker.sock:/var/run/docker.sock \
     --privileged --name prolamb-localstack \
     prolamb/localstack >test/localstack.log &
-# Wait for local stack to come up
+echo "Wait for local stack to come up"
 (tail -f -n0 test/localstack.log &) | grep -q 'Ready.'
 
+echo "Terraform Init"
 cd test/terraform
 terraform init
 terraform apply -auto-approve
 cd ..
 
+echo "Running tests"
 SIMPLE=$(echo $(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
 ERROR=$(echo $(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
 FAIL=$(echo $(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
