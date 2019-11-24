@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+set -e
 
 docker rm -f prolamb-localstack || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
