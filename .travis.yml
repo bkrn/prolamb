@@ -1,0 +1,10 @@
+language: sh
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: "Tests"
+      name: "Integration Tests"
+      script: ./test.sh
