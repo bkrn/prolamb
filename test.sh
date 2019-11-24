@@ -4,7 +4,7 @@ set -e
 docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
 echo "Build Prolamb Docker Image"
-docker build --tag prolamb:latest -f build.Dockerfile . &> /dev/null
+docker build --tag prolamb:latest -f build.Dockerfile .
 cd test/src
 
 dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
