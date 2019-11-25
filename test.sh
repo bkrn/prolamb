@@ -39,14 +39,14 @@ cd ..
 
 echo "Running tests"
 SIMPLE=$(echo $(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-ERROR=$(echo $(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-FAIL=$(echo $(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-UNBOUND=$(echo $(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-FALSE=$(echo $(awslocal lambda invoke --function-name ProlambFalse --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-JSON_ERROR=$(echo $(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-SIMPLE_JSON_ERROR=$(echo $(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-BAD_MODULE=$(echo $(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-BAD_CALLABLE=$(echo $(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2>/dev/stdout)
+FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2>/dev/stdout)
+UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' /dev/stdout 2>/dev/stdout)
+FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' /dev/stdout 2>/dev/stdout)
+JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' /dev/stdout 2>/dev/stdout)
+SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' /dev/stdout 2>/dev/stdout)
+BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' /dev/stdout 2>/dev/stdout)
+BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' /dev/stdout 2>/dev/stdout)
 CONTEXT=$(echo $(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1 | grep -Po 'LANG-en_US.UTF-8')
 EVENT=$(echo $(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
 
