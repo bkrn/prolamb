@@ -38,30 +38,36 @@ terraform apply -auto-approve
 cd ..
 
 echo "Running tests"
-SIMPLE=$(echo $(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout 2> /dev/stdout) | grep -Po '{.*?}' | head -1)
+
+# Success
+SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' resp.json &> log.json ; cat resp.json )
 echo $SIMPLE
-ERROR=$(echo $(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2> /dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $ERROR
-FAIL=$(echo $(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $FAIL
-UNBOUND=$(echo $(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $UNBOUND
-FALSE=$(echo $(awslocal lambda invoke --function-name ProlambFalse --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $FALSE
-JSON_ERROR=$(echo $(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $JSON_ERROR
-SIMPLE_JSON_ERROR=$(echo $(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $SIMPLE_JSON_ERROR
-BAD_MODULE=$(echo $(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $BAD_MODULE
-BAD_CALLABLE=$(echo $(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
-echo $BAD_CALLABLE
-CONTEXT=$(echo $(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1 | grep -Po 'LANG-en_US.UTF-8')
+CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' resp.json &> log.json ; cat resp.json )
 echo $CONTEXT
-EVENT=$(echo $(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' /dev/stdout 2>/dev/stdout) | grep -Po '{.*?}' | head -1)
+EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' resp.json &> log.json ; cat resp.json )
 echo $EVENT
 
+# Failure
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $ERROR
+FAIL=$(awslocal lambda invoke--function-name ProlambFail --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $FAIL
+UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' resp.json &> log.json  ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $UNBOUND
+FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $FALSE
+JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' resp.json &> log.json  ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $JSON_ERROR
+SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $SIMPLE_JSON_ERROR
+BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $BAD_MODULE
+BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+echo $BAD_CALLABLE
+
+
 echo "Adding assert"
+ls
 . assert.sh
 
 assert "echo ${SIMPLE}" '{fullName:William}'
