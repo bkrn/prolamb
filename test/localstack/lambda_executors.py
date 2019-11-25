@@ -145,8 +145,8 @@ class LambdaExecutor(object):
             log_output += '\n%s' % additional_logs
 
         if return_code != 0:
-            raise Exception('Lambda process returned error status code: %s. Output:\n%s' %
-                (return_code, log_output))
+            result = "{" + log_output.split("{")[1].split("}")[0] + "}"
+            result = ''.join(i for i in result if ord(i)<128)
 
         return result, log_output
 

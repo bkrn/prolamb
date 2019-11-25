@@ -1,1 +1,4 @@
-{"nickName":"Bob"}
+{
+  "errorType": "InvalidHandlerCallable",
+  "errorMessage": "Could not find callable named 'hand'"
+}[0m

@@ -40,29 +40,29 @@ cd ..
 echo "Running tests"
 
 # Success
-SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' resp.json &> log.json ; cat resp.json )
+SIMPLE=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $SIMPLE
-CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' resp.json &> log.json ; cat resp.json )
+CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $CONTEXT
-EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' resp.json &> log.json ; cat resp.json )
+EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' resp.json &> /dev/null ; cat resp.json )
 echo $EVENT
 
 # Failure
-ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> log.json ; cat log.json )
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $ERROR
-FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' resp.json &> log.json ; cat log.json )
+FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $FAIL
-UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' resp.json 2> log.json ; cat log.json )
+UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $UNBOUND
-FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' resp.json &> log.json ; cat resp.json )
+FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $FALSE
-JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' resp.json &> log.json  ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $JSON_ERROR
-SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $SIMPLE_JSON_ERROR
-BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $BAD_MODULE
-BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' resp.json &> /dev/null ; cat resp.json )
 echo $BAD_CALLABLE
 
 
@@ -71,11 +71,12 @@ ls
 . assert.sh
 
 assert "echo ${SIMPLE}" '{fullName:William}'
+assert "echo ${CONTEXT}" 'LANG-en_US.UTF-8'
+assert "echo ${EVENT}" '{nickName:Bob}'
+
 assert "echo ${FAIL}" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
 assert "echo ${FALSE}" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
 assert "echo ${UNBOUND}" '{ errorType: HandlerException, errorMessage: error(format_argument_type(a,_8838),context(system:format/3,_8844)) }'
-assert "echo ${CONTEXT}" 'LANG-en_US.UTF-8'
-assert "echo ${EVENT}" '{nickName:Bob}'
 assert "echo ${ERROR}" "{ errorType: HandlerException, errorMessage: This space intentionally left blank }"
 assert "echo ${JSON_ERROR}" "{ errorType: JsonError, errorMessage: I am JSON }"
 assert "echo ${SIMPLE_JSON_ERROR}" "{ errorType: HandlerException, errorMessage: json([name=SomeError,message=Description of Error]) }"
