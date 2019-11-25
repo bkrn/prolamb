@@ -37,14 +37,22 @@ Be sure that the handler option of your lambda is set to `file.predicate`. So if
 
 ## Guide
 
-### Event Argument
+### Writing a Handler
+
+Your handler should have three arguments. The first two, event, and context, are grounded and give you the inputs to your call. The last, Response, is the text you want your function to respond with.
+
+#### Event Argument
 
 The JSON event trigger processed using http/json so that the format is as specified here https://www.swi-prolog.org/pldoc/man?section=jsonsupport - the actual schema of the JSON depends on the almbda integration. 
 
-### Context Argument
+#### Context Argument
 
 Request headers and environment variables specified in the lambda environment. Shape is `context(headers([Name(Value), ...]), env([Key-Value, ...]))`
 
-### Response Argument
+#### Response Argument
 
 Should be attached to an atom or string that is JSON formatted in the proper AWS response type schema. For example if you're using an API Gateway proxy integration `Repsonse` should be attached to an atom/string of the shape found here: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
+
+#### Exceptions
+
+Feel free to throw exceptions. If it is of the form `json([errorType=Type,errorMessage=Message])` then the run time will use your literal as the error otherwise it will attempt to format your throw and use `json([errorType='HandlerException',errorMessage=Message])`.
