@@ -40,7 +40,7 @@ cd ..
 echo "Running tests"
 
 # Success
-SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout 2> /dev/null )
+SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout 2> /dev/null | echo)
 echo $SIMPLE
 CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout 2> /dev/null )
 echo $CONTEXT
