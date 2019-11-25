@@ -70,17 +70,17 @@ echo "Adding assert"
 ls
 . assert.sh
 
-assert "echo ${SIMPLE}" '{fullName:William}'
-assert "echo ${CONTEXT}" 'LANG-en_US.UTF-8'
-assert "echo ${EVENT}" '{nickName:Bob}'
+assert "echo '${SIMPLE}" '{fullName:William}'
+assert "echo '${CONTEXT}" 'LANG-en_US.UTF-8'
+assert "echo '${EVENT}" '{nickName:Bob}'
 
-assert "echo ${FAIL}" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
-assert "echo ${FALSE}" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
-assert "echo ${UNBOUND}" '{ errorType: HandlerException, errorMessage: error(format_argument_type(a,_8838),context(system:format/3,_8844)) }'
-assert "echo ${ERROR}" "{ errorType: HandlerException, errorMessage: This space intentionally left blank }"
-assert "echo ${JSON_ERROR}" "{ errorType: JsonError, errorMessage: I am JSON }"
-assert "echo ${SIMPLE_JSON_ERROR}" "{ errorType: HandlerException, errorMessage: json([name=SomeError,message=Description of Error]) }"
-assert "echo ${BAD_MODULE}" "{ errorType: InvalidHandlerModule, errorMessage: Could not find module named 'grain' }"
-assert "echo ${BAD_CALLABLE}" "{ errorType: InvalidHandlerCallable, errorMessage: Could not find callable named 'hand' }"
+assert "echo '${FAIL}'" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
+assert "echo '${FALSE}'" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
+assert "echo '${UNBOUND}'" '{ errorType: HandlerException, errorMessage: error(format_argument_type(a,_8838),context(system:format/3,_8844)) }'
+assert "echo '${ERROR}'" "{ errorType: HandlerException, errorMessage: This space intentionally left blank }"
+assert "echo '${JSON_ERROR}'" "{ errorType: JsonError, errorMessage: I am JSON }"
+assert "echo '${SIMPLE_JSON_ERROR}'" "{ errorType: HandlerException, errorMessage: json([name=SomeError,message=Description of Error]) }"
+assert "echo '${BAD_MODULE}'" "{ errorType: InvalidHandlerModule, errorMessage: Could not find module named 'grain' }"
+assert "echo '${BAD_CALLABLE}'" "{ errorType: InvalidHandlerCallable, errorMessage: Could not find callable named 'hand' }"
 
 assert_end "simple invocation"
