@@ -48,9 +48,9 @@ EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullNa
 echo $EVENT
 
 # Failure
-ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> log.json ; cat log.json )
 echo $ERROR
-FAIL=$(awslocal lambda invoke--function-name ProlambFail --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+FAIL=$(awslocal lambda invoke--function-name ProlambFail --payload '{}' resp.json &> log.json ; cat log.json )
 echo $FAIL
 UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' resp.json &> log.json  ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
 echo $UNBOUND
