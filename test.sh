@@ -50,11 +50,11 @@ echo $EVENT
 # Failure
 ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> log.json ; cat log.json )
 echo $ERROR
-FAIL=$(awslocal lambda invoke--function-name ProlambFail --payload '{}' resp.json &> log.json ; cat log.json )
+FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' resp.json &> log.json ; cat log.json )
 echo $FAIL
 UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' resp.json 2> log.json ; cat log.json )
 echo $UNBOUND
-FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' resp.json &> log.json ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
+FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' resp.json &> log.json ; cat resp.json )
 echo $FALSE
 JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' resp.json &> log.json  ; cat log.json | tr -d '\n' | awk -F'{|}' '{print "{ "$2" }"}' )
 echo $JSON_ERROR
