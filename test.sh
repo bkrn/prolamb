@@ -70,9 +70,9 @@ echo "Adding assert"
 ls
 . assert.sh
 
-assert "echo '${SIMPLE}" '{fullName:William}'
-assert "echo '${CONTEXT}" 'LANG-en_US.UTF-8'
-assert "echo '${EVENT}" '{nickName:Bob}'
+assert "echo '${SIMPLE}'" '{fullName:William}'
+assert "echo '${CONTEXT}'" 'LANG-en_US.UTF-8'
+assert "echo '${EVENT}'" '{nickName:Bob}'
 
 assert "echo '${FAIL}'" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
 assert "echo '${FALSE}'" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
