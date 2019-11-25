@@ -18,4 +18,4 @@ jobs:
   include:
     - stage: "Tests"
       name: "Integration Tests"
-      script: ./test.sh
+      script: bash test.sh
