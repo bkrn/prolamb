@@ -1,5 +1,0 @@
-{
-  "errorType": "HandlerFailure",
-  "errorMessage": "Handler predicate failed to resolve"
-}[0m
-[32mREPORT RequestId: a7d2cc8c-5d08-1836-f769-37eeb9217088	Init Duration: 237.27 ms	Duration: 2.51 ms	Billed Duration: 100 ms	Memory Size: 1536 MB	Max Memory Used: 12 MB	[0m
