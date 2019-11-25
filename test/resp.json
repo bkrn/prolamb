@@ -1,4 +1,1 @@
-{
-  "errorType": "InvalidHandlerCallable",
-  "errorMessage": "Could not find callable named 'hand'"
-}[0m
+{"errorMessage":"Could not find callable named 'hand'","errorType":"InvalidHandlerCallable"}
