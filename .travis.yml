@@ -6,11 +6,6 @@ python:
 
 services:
   - docker
-addons:
-  apt:
-    packages:
-      - "python3"
-      - "python3-pip"
 # install terraform
 
 before_install:
@@ -20,10 +15,10 @@ before_install:
   - rm -f terraform.zip
   - docker pull lambci/lambda:build-provided
   - docker pull localstack/localstack:0.10.4
-  - python3 -m pip install --upgrade --user "setuptools"
-  - python3 -m pip install --upgrade --user "wheel"
-  - python3 -m pip install --upgrade --user "awscli"
-  - python3 -m pip install --upgrade --user "awscli-local"
+  - python3.8 -m pip install --upgrade --user "setuptools"
+  - python3.8 -m pip install --upgrade --user "wheel"
+  - python3.8 -m pip install --upgrade --user "awscli"
+  - python3.8 -m pip install --upgrade --user "awscli-local"
 
 jobs:
   include:
