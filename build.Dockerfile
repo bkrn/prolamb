@@ -30,6 +30,7 @@ RUN mkdir -p /var/task && \
     [ ${SUM} = ${SWIPL_CHECKSUM} ] && \
     tar xfz swipl-${SWIPL}.tar.gz > /dev/null && \
     cd swipl-${SWIPL} && \
+    echo "SWIPL cmake" && \
     cmake \
         -DCMAKE_INSTALL_PREFIX=/var/task \
         -DSWIPL_PACKAGES_PCRE=OFF \
@@ -38,8 +39,10 @@ RUN mkdir -p /var/task && \
         -DSWIPL_PACKAGES_X=OFF \
         -DBUILD_TESTING=OFF \
         -DINSTALL_TESTS=OFF \
-        -DINSTALL_DOCUMENTATION=OFF > /dev/null && \
+        -DINSTALL_DOCUMENTATION=OFF &> /dev/null && \
+    echo "SWIPL make" && \
     make > /dev/null && \
+    echo "SWIPL make install" && \
     make install > /dev/null && \
     cd .. && rm -rf * > /dev/null && \
     rm -rf /var/task/bin > /dev/null && \
