@@ -12,7 +12,7 @@ before_install:
   - rm -f terraform.zip
   - docker pull lambci/lambda:build-provided
   - docker pull localstack/localstack:0.10.4
-  - snap install python38
+  - sudo snap install python38
   - python38 -m pip install --upgrade --user "setuptools"
   - python38 -m pip install --upgrade --user "wheel"
   - python38 -m pip install --upgrade --user "awscli"
