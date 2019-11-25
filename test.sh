@@ -40,29 +40,29 @@ cd ..
 echo "Running tests"
 
 # Success
-SIMPLE=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' resp.json &> /dev/null ; cat resp.json )
+SIMPLE=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout 2> /dev/null )
 echo $SIMPLE
-CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' resp.json &> /dev/null ; cat resp.json )
+CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout 2> /dev/null )
 echo $CONTEXT
-EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' resp.json &> /dev/null ; cat resp.json )
+EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' /dev/stdout 2> /dev/null )
 echo $EVENT
 
 # Failure
-ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' resp.json &> /dev/null ; cat resp.json )
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2> /dev/null )
 echo $ERROR
-FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' resp.json &> /dev/null ; cat resp.json )
+FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2> /dev/null )
 echo $FAIL
-UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' resp.json &> /dev/null ; cat resp.json )
+UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' /dev/stdout 2> /dev/null )
 echo $UNBOUND
-FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' resp.json &> /dev/null ; cat resp.json )
+FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' /dev/stdout 2> /dev/null )
 echo $FALSE
-JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' resp.json &> /dev/null ; cat resp.json )
+JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' /dev/stdout 2> /dev/null )
 echo $JSON_ERROR
-SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' resp.json &> /dev/null ; cat resp.json )
+SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' /dev/stdout 2> /dev/null )
 echo $SIMPLE_JSON_ERROR
-BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' resp.json &> /dev/null ; cat resp.json )
+BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' /dev/stdout 2> /dev/null )
 echo $BAD_MODULE
-BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' resp.json &> /dev/null ; cat resp.json )
+BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' /dev/stdout 2> /dev/null )
 echo $BAD_CALLABLE
 
 
