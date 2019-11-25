@@ -20,9 +20,8 @@ before_install:
   - rm -f terraform.zip
   - docker pull lambci/lambda:build-provided
   - docker pull localstack/localstack:0.10.4
-  - pip3 install --upgrade --user pip setuptools 
-  - pip3 install awscli --upgrade --user
-  - pip3 install awscli-local --upgrade --user
+  - python3 -m pip install --user "awscli"
+  - python3 -m pip install --user "awscli-local"
 
 jobs:
   include:
