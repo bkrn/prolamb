@@ -40,15 +40,15 @@ cd ..
 echo "Running tests"
 
 # Success
-SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout 2> /dev/null | echo)
+SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout )
 echo $SIMPLE
-CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout 2> /dev/null )
+CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout )
 echo $CONTEXT
-EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' /dev/stdout 2> /dev/null )
+EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' /dev/stdout )
 echo $EVENT
 
 # Failure
-ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2> /dev/null | echo )
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout )
 echo $ERROR
 FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2> /dev/null )
 echo $FAIL
