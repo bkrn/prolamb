@@ -48,7 +48,7 @@ EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullNa
 echo $EVENT
 
 # Failure
-ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2> /dev/null )
+ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout 2> /dev/null | echo )
 echo $ERROR
 FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2> /dev/null )
 echo $FAIL
