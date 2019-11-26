@@ -39,35 +39,43 @@ cd ..
 
 echo "Running tests"
 
+strip_status() {
+    echo "${1}" | awk -F'{|}' '{print "{"$2"}"}'
+}
+
+invoke_function() {
+    RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
+    strip_status "${RESULT}"
+}
+
 # Success
-SIMPLE=$(awslocal lambda invoke --function-name ProlambSimple --payload '{}' /dev/stdout )
+SIMPLE=$(invoke_function ProlambSimple '{}')
 echo $SIMPLE
-CONTEXT=$(awslocal lambda invoke --function-name ProlambContext --payload '{}' /dev/stdout )
+CONTEXT=$(invoke_function ProlambContext '{}')
 echo $CONTEXT
-EVENT=$(awslocal lambda invoke --function-name ProlambEvent --payload '{ "fullName": "William" }' /dev/stdout )
+EVENT=$(invoke_function ProlambEvent '{ "fullName": "William" }')
 echo $EVENT
 
 # Failure
-ERROR=$(awslocal lambda invoke --function-name ProlambError --payload '{}' /dev/stdout )
+ERROR=$(invoke_function ProlambError '{}')
 echo $ERROR
-FAIL=$(awslocal lambda invoke --function-name ProlambFail --payload '{}' /dev/stdout 2> /dev/null )
+FAIL=$(invoke_function ProlambFail '{}')
 echo $FAIL
-UNBOUND=$(awslocal lambda invoke --function-name ProlambUnbound --payload '{}' /dev/stdout 2> /dev/null )
+UNBOUND=$(invoke_function ProlambUnbound '{}')
 echo $UNBOUND
-FALSE=$(awslocal lambda invoke --function-name ProlambFalse --payload '{}' /dev/stdout 2> /dev/null )
+FALSE=$(invoke_function ProlambFalse '{}')
 echo $FALSE
-JSON_ERROR=$(awslocal lambda invoke --function-name ProlambJsonError --payload '{}' /dev/stdout 2> /dev/null )
+JSON_ERROR=$(invoke_function ProlambJsonError '{}')
 echo $JSON_ERROR
-SIMPLE_JSON_ERROR=$(awslocal lambda invoke --function-name ProlambSimpleJsonError --payload '{}' /dev/stdout 2> /dev/null )
+SIMPLE_JSON_ERROR=$(invoke_function ProlambSimpleJsonError '{}')
 echo $SIMPLE_JSON_ERROR
-BAD_MODULE=$(awslocal lambda invoke --function-name ProlambBadModule --payload '{}' /dev/stdout 2> /dev/null )
+BAD_MODULE=$(invoke_function ProlambBadModule '{}')
 echo $BAD_MODULE
-BAD_CALLABLE=$(awslocal lambda invoke --function-name ProlambBadCallable --payload '{}' /dev/stdout 2> /dev/null )
+BAD_CALLABLE=$(invoke_function ProlambBadCallable '{}')
 echo $BAD_CALLABLE
 
-
 echo "Adding assert"
-ls
+
 . assert.sh
 
 assert "echo '${SIMPLE}'" '{fullName:William}'
