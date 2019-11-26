@@ -13,11 +13,12 @@ before_install:
   - docker pull lambci/lambda:build-provided
   - docker pull localstack/localstack:0.10.4
   - sudo snap install python38
+  - export PATH=${PATH}:/home/travis/snap/python38/22/.local/bin
   - python38 -m pip install --upgrade --user "setuptools"
   - python38 -m pip install --upgrade --user "wheel"
   - python38 -m pip install --upgrade --user "awscli"
   - python38 -m pip install --upgrade --user "awscli-local"
-
+  
 jobs:
   include:
     - stage: "Tests"
