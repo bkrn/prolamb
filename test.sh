@@ -40,7 +40,7 @@ cd ..
 echo "Running tests"
 
 strip_status() {
-    echo "${1}" | awk -F'{|}' '{print "{"$2"}"}'
+    echo "${1}" | awk -F'{|}' 'NR==1{print "{"$2"}"}'
 }
 
 invoke_function() {
@@ -51,7 +51,7 @@ invoke_function() {
 # Success
 SIMPLE=$(invoke_function ProlambSimple '{}')
 echo $SIMPLE
-CONTEXT=$(invoke_function ProlambContext '{}')
+CONTEXT=$(invoke_function ProlambContext '{}' | grep -o 'LANG-en_US.UTF-8')
 echo $CONTEXT
 EVENT=$(invoke_function ProlambEvent '{ "fullName": "William" }')
 echo $EVENT
@@ -78,17 +78,19 @@ echo "Adding assert"
 
 . assert.sh
 
-assert "echo '${SIMPLE}'" '{fullName:William}'
+# Test success
+assert "echo '${SIMPLE}'" '{"fullName":"William"}'
 assert "echo '${CONTEXT}'" 'LANG-en_US.UTF-8'
-assert "echo '${EVENT}'" '{nickName:Bob}'
+assert "echo '${EVENT}'" '{"nickName":"Bob"}'
 
-assert "echo '${FAIL}'" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
-assert "echo '${FALSE}'" '{ errorType: HandlerFailure, errorMessage: Handler predicate failed to resolve }'
-assert "echo '${UNBOUND}'" '{ errorType: HandlerException, errorMessage: error(format_argument_type(a,_8838),context(system:format/3,_8844)) }'
-assert "echo '${ERROR}'" "{ errorType: HandlerException, errorMessage: This space intentionally left blank }"
-assert "echo '${JSON_ERROR}'" "{ errorType: JsonError, errorMessage: I am JSON }"
-assert "echo '${SIMPLE_JSON_ERROR}'" "{ errorType: HandlerException, errorMessage: json([name=SomeError,message=Description of Error]) }"
-assert "echo '${BAD_MODULE}'" "{ errorType: InvalidHandlerModule, errorMessage: Could not find module named 'grain' }"
-assert "echo '${BAD_CALLABLE}'" "{ errorType: InvalidHandlerCallable, errorMessage: Could not find callable named 'hand' }"
+# Test failure
+assert "echo '${FAIL}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+assert "echo '${FALSE}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+assert "echo '${UNBOUND}'" '{"errorMessage":"error(format_argument_type(a,_8838),context(system:format/3,_8844))","errorType":"HandlerException"}'
+assert "echo '${ERROR}'" '{"errorMessage":"This space intentionally left blank","errorType":"HandlerException"}'
+assert "echo '${JSON_ERROR}'" '{"errorMessage":"I am JSON","errorType":"JsonError"}'
+assert "echo '${SIMPLE_JSON_ERROR}'" '{"errorMessage":"json([name=SomeError,message=Description of Error])","errorType":"HandlerException"}'
+assert "echo '${BAD_MODULE}'" '{"errorMessage":"Could not find module named grain","errorType":"InvalidHandlerModule"}'
+assert "echo '${BAD_CALLABLE}'" '{"errorMessage":"Could not find callable named hand","errorType":"InvalidHandlerCallable"}'
 
 assert_end "simple invocation"
