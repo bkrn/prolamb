@@ -1,5 +1,8 @@
 .vscode
+.DS_Store
+
 bundle.zip
-test/terraform/.terraform
-test/terraform/terraform.*
-test/localstack.log
+testdata/terraform/.terraform
+testdata/terraform/terraform.*
+testdata/localstack.log
+testdata/assert.sh

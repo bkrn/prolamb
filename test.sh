@@ -5,7 +5,7 @@ docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
 echo "Build Prolamb Docker Image"
 docker build --tag prolamb:latest -f build.Dockerfile .
-cd test/src
+cd testdata/src
 
 dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
@@ -27,12 +27,12 @@ docker build -f localstack.Dockerfile --tag prolamb/localstack:latest . &> /dev/
 cd ../..
 docker run -p 4574:4574 -v /var/run/docker.sock:/var/run/docker.sock \
     --privileged --name prolamb-localstack \
-    prolamb/localstack >test/localstack.log &
+    prolamb/localstack >testdata/localstack.log &
 echo "Wait for local stack to come up"
-(tail -f -n0 test/localstack.log &) | grep -q 'Ready.'
+(tail -f -n0 testdata/localstack.log &) | grep -q 'Ready.'
 
 echo "Terraform Init"
-cd test/terraform
+cd testdata/terraform
 terraform init
 terraform apply -auto-approve
 cd ..
@@ -95,6 +95,7 @@ echo $BAD_CALLABLE
 
 echo "Adding assert"
 
+[ -f assert.sh ] || wget https://raw.github.com/lehmannro/assert.sh/v1.1/assert.sh -O assert.sh &>/dev/null
 . assert.sh
 
 # Test success
