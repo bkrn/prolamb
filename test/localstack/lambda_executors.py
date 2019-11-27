@@ -141,7 +141,9 @@ class LambdaExecutor(object):
         # will be part of the "result" variable here. Hence, make sure that we extract
         # only the *last* line of "result" and consider anything above that as log output.
         result += log_output
-        return result, log_output
+        result = ''.join([c for c in result if ord(c) < 256])
+        result = "{ " + result.split("{")[1].split("}")[0] + " }"
+        return result, ''
 
 
 class ContainerInfo:
