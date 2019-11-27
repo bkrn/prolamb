@@ -1,5 +1,5 @@
 provider "aws" {
-  version                     = "~> 2.34"
+  version                     = "=2.34.0"
   access_key                  = "mock_access_key"
   region                      = "us-east-1"
   s3_force_path_style         = true

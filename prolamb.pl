@@ -55,7 +55,7 @@ main_loop(Pred) :-
     next(Event, Headers, Id),
     context(Headers, Context),
     catch(
-        (call(Pred, Event, Context, FnOutput) ->
+        ((call(Pred, Event, Context, FnOutput), ground(FnOutput)) ->
             respond(Id, FnOutput) 
             ; handle_error(Id, json([errorType="HandlerFailure", 
                 errorMessage="Handler predicate failed to resolve"]))), 

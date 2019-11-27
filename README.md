@@ -2,17 +2,19 @@
 
 SWI-Prolog bootstrap for the AWS Lambda provided runtime
 
-## About
+## What?
 
-Build a .zip file targetting AWS's lambda provided runtime by bringing your own handler and wrapping it in this runtime. 
+You can build a .zip file using the docker image in this repo and your own handler scripts that is ready to be uploaded into an AWS lambda function using the `provided` runtime.
 
 ## Quick Start
 
 Write a handler/3:
 
 ```prolog
-%!      handler(++Event:list, ++Context:list, --Response:text).
-handler(_, _, Response) :- 
+%! handler(++Event:list, ++Context:list, --Response:text).
+% Clearly this will complain about singleton variables
+% but there is value to naming the variables here
+handler(json(Event), Context, Response) :- 
   Response = '{"hello": "world"}'.
 ```
 
@@ -22,7 +24,8 @@ then build your bundle like:
 
 ```sh
 docker pull bkrn/prolamb:latest
-cd $SOURCE_DIRECTORY # location of main.pl
+# location of main.pl
+cd $SOURCE_DIRECTORY 
 # Map your current directory (location of your SWI-prolog source code)
 # into the /dist directory of the build container using volumes
 docker run --rm -v $PWD:/dist bkrn/prolamb:latest
@@ -31,7 +34,7 @@ docker run --rm -v $PWD:/dist bkrn/prolamb:latest
 # runtime
 ```
 
-If you're using other source files they must be in or bew children of $SOURCE_DIRECTORY. Otherwise they won't make it into bundle.zip.
+If you're using other source files they must be in or children of $SOURCE_DIRECTORY. Otherwise they won't make it into bundle.zip.
 
 Be sure that the handler option of your lambda is set to `file.predicate`. So if your entry file is main.pl and the predicate handler is handler/3 then the handler option should be `main.handler`.
 
@@ -39,11 +42,11 @@ Be sure that the handler option of your lambda is set to `file.predicate`. So if
 
 ### Writing a Handler
 
-Your handler should have three arguments. The first two, event, and context, are grounded and give you the inputs to your call. The last, Response, is the text you want your function to respond with.
+Your handler should have three arguments. The first two, event, and context, are grounded and give you the inputs to your call. The last, Response, is bound to the the text type you want your function to respond with by your handler predicate.
 
 #### Event Argument
 
-The JSON event trigger processed using http/json so that the format is as specified here https://www.swi-prolog.org/pldoc/man?section=jsonsupport - the actual schema of the JSON depends on the almbda integration. 
+The JSON event trigger processed using http/json so that the format is as specified here https://www.swi-prolog.org/pldoc/man?section=jsonsupport - the actual schema of the JSON depends on the lambda integration. but it will always be `json(_)`
 
 #### Context Argument
 
@@ -55,4 +58,4 @@ Should be attached to an atom or string that is JSON formatted in the proper AWS
 
 #### Exceptions
 
-Feel free to throw exceptions. If it is of the form `json([errorType=Type,errorMessage=Message])` then the run time will use your literal as the error otherwise it will attempt to format your throw and use `json([errorType='HandlerException',errorMessage=Message])`.
+Feel free to throw exceptions. If it is of the form `json([errorType=Type,errorMessage=Message])` then the run time will use your literal as the error otherwise it will attempt to format your throw and use `json([errorType='HandlerException',errorMessage=Message])` where `format(string(Message), "~w", ThingThatWasThrown)`.
