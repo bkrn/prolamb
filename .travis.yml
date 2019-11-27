@@ -13,7 +13,8 @@ before_install:
   - sudo unzip terraform.zip -d /opt/terraform
   - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
   - rm -f terraform.zip
-  - sudo wget -qO- https://bootstrap.pypa.io/get-pip.py | python3
+  - curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+  - python3 get-pip.py --user
   - python3 -m pip install --upgrade --user "awscli"
   - python3 -m pip install --upgrade --user "awscli-local"
   
