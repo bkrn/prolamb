@@ -1,6 +1,6 @@
 language: sh
 dist: bionic
-
+sudo: required
 services:
   - docker
 
