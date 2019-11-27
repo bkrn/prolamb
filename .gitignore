@@ -2,7 +2,7 @@
 .DS_Store
 
 bundle.zip
-testdata/terraform/.terraform
-testdata/terraform/terraform.*
-testdata/localstack.log
-testdata/assert.sh
+test/terraform/.terraform
+test/terraform/terraform.*
+test/localstack.log
+test/assert.sh
