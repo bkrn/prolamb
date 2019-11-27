@@ -69,29 +69,18 @@ invoke_function() {
 
 # Success
 SIMPLE=$(invoke_function ProlambSimple '{}')
-echo $SIMPLE
 CONTEXT=$(invoke_function ProlambContext '{}' | grep -o 'LANG-en_US.UTF-8')
-echo $CONTEXT
 EVENT=$(invoke_function ProlambEvent '{ "fullName": "William" }')
-echo $EVENT
 
 # Failure
 ERROR=$(invoke_function ProlambError '{}')
-echo $ERROR
 FAIL=$(invoke_function ProlambFail '{}')
-echo $FAIL
 UNBOUND=$(invoke_function ProlambUnbound '{}')
-echo $UNBOUND
 FALSE=$(invoke_function ProlambFalse '{}')
-echo $FALSE
 JSON_ERROR=$(invoke_function ProlambJsonError '{}')
-echo $JSON_ERROR
 SIMPLE_JSON_ERROR=$(invoke_function ProlambSimpleJsonError '{}')
-echo $SIMPLE_JSON_ERROR
 BAD_MODULE=$(invoke_function ProlambBadModule '{}')
-echo $BAD_MODULE
 BAD_CALLABLE=$(invoke_function ProlambBadCallable '{}')
-echo $BAD_CALLABLE
 
 echo "Adding assert"
 

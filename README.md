@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/bkrn/prolamb.svg?branch=master)](https://travis-ci.com/bkrn/prolamb)
+
 # Prolamb
 
 SWI-Prolog bootstrap for the AWS Lambda provided runtime
