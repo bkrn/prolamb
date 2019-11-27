@@ -5,12 +5,10 @@ services:
   - docker
 
 before_install:
-  - curl -fSL "https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_amd64.zip" -o terraform.zip
+  - curl -fSL "https://releases.hashicorp.com/terraform/0.12.13/terraform_0.12.13_linux_amd64.zip" -o terraform.zip
   - sudo unzip terraform.zip -d /opt/terraform
   - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
   - rm -f terraform.zip
-  - docker pull lambci/lambda:build-provided
-  - docker pull localstack/localstack:0.10.4
   - pip install --upgrade --user "awscli"
   - pip install --upgrade --user "awscli-local"
   
