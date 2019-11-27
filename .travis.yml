@@ -1,15 +1,9 @@
 language: sh
 dist: bionic
-
+sudo: required
 services:
   - docker
 # install terraform
-
-
-addons:
-  apt:
-    packages:
-      - docker-ce
 
 before_install:
   - curl -fSL "https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_amd64.zip" -o terraform.zip
