@@ -17,19 +17,13 @@ before_install:
   - python3 get-pip.py --user
   - python3 -m pip install --upgrade --user "awscli"
   - python3 -m pip install --upgrade --user "awscli-local"
-
-build:
-  provider: script
-  script: docker build --tag prolamb:latest -f build.Dockerfile .
-  on:
-    branch: master
   
-test:
-  provider: script
-  script: bash test.sh
+jobs:
+  include:
+    - stage: "compile"
+      script: "docker build --tag prolamb:latest -f build.Dockerfile ."
+    - stage: "test"
+      script: bash test.sh
+    - stage: "deploy"
+      script: bash deploy.sh
 
-deploy:
-  provider: script
-  script: bash deploy.sh
-  on:
-    branch: master
