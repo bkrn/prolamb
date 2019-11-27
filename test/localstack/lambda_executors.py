@@ -140,15 +140,7 @@ class LambdaExecutor(object):
         # Note: The user's code may have been logging to stderr, in which case the logs
         # will be part of the "result" variable here. Hence, make sure that we extract
         # only the *last* line of "result" and consider anything above that as log output.
-        if '\n' in result:
-            additional_logs, _, result = result.rpartition('\n')
-            log_output += '\n%s' % additional_logs
-
-        if return_code != 0:
-            result += "\n" + log_output
-            result = "{" + result.split("{")[1].split("}")[0] + "}"
-            result = ''.join(i for i in result if ord(i)<128)
-
+        result += log_output
         return result, log_output
 
 
