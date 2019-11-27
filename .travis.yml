@@ -21,7 +21,7 @@ before_install:
 jobs:
   include:
     - stage: "compile"
-      script: "docker build --tag prolamb:latest -f build.Dockerfile ."
+      script: "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
     - stage: "test"
       script: bash test.sh
     - stage: "deploy"

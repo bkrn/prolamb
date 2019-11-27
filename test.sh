@@ -4,7 +4,7 @@ set -e
 docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
 echo "Build Prolamb Docker Image"
-docker build --tag prolamb:latest -f build.Dockerfile .
+docker build --tag prolamb/prolamb:latest -f build.Dockerfile .
 cd test/src
 
 dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
@@ -12,7 +12,7 @@ for dir in $dirlist
 do
     echo "Build ${dir} test lambda .zip"
     cd $dir && rm -f bundle.zip || true
-    docker run --rm -v $PWD:/dist prolamb:latest &> /dev/null
+    docker run --rm -v $PWD:/dist prolamb/prolamb:latest &> /dev/null
     cd ..
 done
 cd ..
