@@ -40,11 +40,30 @@ cd ..
 echo "Running tests"
 
 strip_status() {
-    echo "${1}" | awk -F'{|}' 'NR==1{print "{"$2"}"}'
+    local OPEN=0
+    local CLOSE=0
+    local S=""
+    for (( i=0; i<${#1}; i++ )); do
+        C=${1:$i:1}
+        if [[ "${C}" == "{" ]]; then 
+            ((++OPEN))
+        elif [[ "${C}" == "}" ]]; then 
+            ((++CLOSE)) 
+        fi
+        if (( OPEN > 0 )); then 
+            if (( OPEN >= CLOSE )) && [[ "${C}" != "\n" ]]; then 
+                local S="${S}${C}"
+            fi
+            if (( OPEN == CLOSE )); then 
+                i=${#1}
+            fi
+        fi
+    done
+    echo "${S}"
 }
 
 invoke_function() {
-    RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
+    local RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
     strip_status "${RESULT}"
 }
 
