@@ -24,6 +24,7 @@ before_install:
   - python3 get-pip.py --user
   - python3 -m pip install --upgrade --user "awscli"
   - python3 -m pip install --upgrade --user "awscli-local"
+  - sudo apt-get install swi-prolog
   
 jobs:
   include:
@@ -36,6 +37,7 @@ jobs:
       script:
         - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
         - bash test.sh
+        - bash test.readme.sh
     - stage: "deploy"
       script: 
         - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
