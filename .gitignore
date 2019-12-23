@@ -5,6 +5,6 @@ bundle.zip
 test/terraform/.terraform
 test/terraform/terraform.*
 test/localstack.log
-test/assert.sh
+**/assert.sh
 
 doctest.pl
