@@ -90,6 +90,7 @@ handler(json(Event), Context, Response) :-
             names(FullName, NickName, Context), 
             Names),
     atom_json_term(Response, json([possibleNames=Names]), []).
+% DOCTEST
 ```
 
 #### Event Argument

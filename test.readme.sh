@@ -2,7 +2,7 @@
 
 set -e
 
-SOURCE=$(grep -Pzo '(?s)%\s+DOCTEST(.*?)(?=```)' README.md | tr -d '\000')
+SOURCE=$(awk 'f{ if (/DOCTEST/){printf "%s", buf; f=0; buf=""} else buf = buf $0 ORS}; /DOCTEST/{f=1}' README.md)
 echo "${SOURCE}" > doctest.pl
 
 T1=$(
