@@ -1,4 +1,5 @@
-language: sh
+language: shell
+os: linux
 dist: xenial
 sudo: required
 services:
@@ -24,7 +25,7 @@ before_install:
   - python3 get-pip.py --user
   - python3 -m pip install --upgrade --user "awscli"
   - python3 -m pip install --upgrade --user "awscli-local"
-  - sudo apt-get install swi-prolog
+  - apt-get install -y swi-prolog jq
   
 jobs:
   include:
