@@ -25,12 +25,12 @@ Place it into some file like `main.pl`
 then build your bundle like:
 
 ```sh
-docker pull bkrn/prolamb:latest
+docker pull prolamb/prolamb:latest
 # location of main.pl
 cd $SOURCE_DIRECTORY 
 # Map your current directory (location of your SWI-prolog source code)
 # into the /dist directory of the build container using volumes
-docker run --rm -v $PWD:/dist bkrn/prolamb:latest
+docker run --rm -v $PWD:/dist prolamb/prolamb:latest
 # After the build is complete you'll have a brand new bundle.zip
 # archive that can be used in a lambda instance with the "provided" 
 # runtime
