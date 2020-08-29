@@ -3,17 +3,15 @@
 set -e
 
 SOURCE=$(awk 'f{ if (/DOCTEST/){printf "%s", buf; f=0; buf=""} else buf = buf $0 ORS}; /DOCTEST/{f=1}' README.md)
-echo "${SOURCE}" > doctest.pl
-echo "${SOURCE}"
-swipl -s doctest.pl -g "handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt
+
 T1=$(
-swipl -s doctest.pl -g "handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt | \
+echo "${SOURCE}" | swipl -g "load_files(stdin, [stream(user_input)])" -g "handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt | \
     jq '.possibleNames' | \
     jq 'length'
 )
-swipl -s doctest.pl -g "handler(json([]), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt
+
 T2=$(
-swipl -s doctest.pl -g "handler(json([]), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt | \
+echo "${SOURCE}" | swipl -g "load_files(stdin, [stream(user_input)])" -g "handler(json([]), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt | \
     jq '.possibleNames' | \
     jq 'length'
 )
