@@ -5,16 +5,9 @@ sudo: required
 services:
   - docker
 
-cache:
-  bundler: true
-  directories:
-    - ${CACHE_FOLDER}
-
 env:
   global:
     - PATH=/opt/python/3.7.1/bin:$PATH
-    - CACHE_FOLDER=$HOME/docker-images
-    - CACHE_FILE=${CACHE_FOLDER}/prolamb-${TRAVIS_COMMIT}.tgz
 
 before_install:
   - curl -fSL "https://releases.hashicorp.com/terraform/0.12.13/terraform_0.12.13_linux_amd64.zip" -o terraform.zip
@@ -29,17 +22,12 @@ before_install:
   
 jobs:
   include:
-    - stage: "build"
-      script: 
-        - "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
-        - mkdir -p ${CACHE_FOLDER}
-        - docker save prolamb/prolamb:latest | gzip -c > ${CACHE_FILE}
     - stage: "test"
       script:
-        - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
-        - bash test.sh
-        - bash test.readme.sh
+        - "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
+        - ./test.sh
+        - ./test.readme.sh
     - stage: "deploy"
       script: 
-        - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
-        - bash deploy.sh
+        - "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
+        - ./deploy.sh

@@ -7,7 +7,7 @@ echo "Build Prolamb Docker Image"
 docker build --tag prolamb/prolamb:latest -f build.Dockerfile .
 cd test/src
 
-dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
+dirlist=$(find . -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
 do
     echo "Build ${dir} test lambda .zip"
