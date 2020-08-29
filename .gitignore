@@ -6,5 +6,3 @@ test/terraform/.terraform
 test/terraform/terraform.*
 test/localstack.log
 **/assert.sh
-
-doctest.pl

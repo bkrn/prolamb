@@ -55,8 +55,6 @@ For example a service that matches nicknames and fullnames might have a handler 
 :- use_module(library(http/json)).
 :- use_module(library(date)).
 
-
-
 lambda_local_datetime(context(headers(H), _), DT) :-
   member('TZ'(TimeZone), H),
   member(TimeZone-TZ, ['PST'-(5 * 60 * 60)]),
@@ -90,6 +88,22 @@ handler(json(Event), Context, Response) :-
             names(FullName, NickName, Context), 
             Names),
     atom_json_term(Response, json([possibleNames=Names]), []).
+
+% this is the goal that is run as part of the build pipeline.
+doctests() :-
+  % Match on fullName
+  handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response1),
+  ground(Response1),
+  Response1 = '{"possibleNames": [ {"fullname":"Nicholas", "nickName":"Nick"} ]}',
+  % Match on nickName
+  handler(json([nickName='Bob']), context(headers(['TZ'('PST')]), _), Response2),
+  ground(Response2),
+  Response2 = '{"possibleNames": [ {"fullname":"William", "nickName":"Bob"} ]}',
+  % There is no ground!
+  handler(json([]), context(headers(['TZ'('PST')]), _), Response3),
+  ground(Response3),
+  Response3 = '{\n  "possibleNames": [\n    {"fullname":"Nicholas", "nickName":"Nick"},\n    {"fullname":"William", "nickName":"Bob"},\n    {"fullname":"William", "nickName":"Robert"},\n    {"fullname":"Steven", "nickName":"Steve"}\n  ]\n}'.
+
 % DOCTEST
 ```
 
