@@ -9,6 +9,10 @@ env:
   global:
     - PATH=/opt/python/3.7.1/bin:$PATH
 
+addons:
+  hosts:
+    - localhost
+
 before_install:
   - curl -fSL "https://releases.hashicorp.com/terraform/0.12.13/terraform_0.12.13_linux_amd64.zip" -o terraform.zip
   - sudo unzip terraform.zip -d /opt/terraform
@@ -18,6 +22,8 @@ before_install:
   - python3 get-pip.py --user
   - python3 -m pip install --upgrade --user "awscli"
   - python3 -m pip install --upgrade --user "awscli-local"
+  - sudo add-apt-repository -y ppa:swi-prolog/stable
+  - sudo apt-get update -y
   - sudo apt-get install -y swi-prolog jq
   
 jobs:
