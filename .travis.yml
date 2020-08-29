@@ -20,8 +20,9 @@ before_install:
   - rm -f terraform.zip
   - curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
   - python3 get-pip.py --user
-  - python3 -m pip install --upgrade --user "awscli"
-  - python3 -m pip install --upgrade --user "awscli-local"
+  - python3 -m pip install -Iv --user "botocore==1.17.36"
+  - python3 -m pip install -Iv --user "awscli==1.18.113"
+  - python3 -m pip install -Iv --user "awscli-local==0.7"
   - sudo add-apt-repository -y ppa:swi-prolog/stable
   - sudo apt-get update -y
   - sudo apt-get install -y swi-prolog jq
