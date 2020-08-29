@@ -4,7 +4,7 @@ set -e
 
 SOURCE=$(awk 'f{ if (/DOCTEST/){printf "%s", buf; f=0; buf=""} else buf = buf $0 ORS}; /DOCTEST/{f=1}' README.md)
 echo "${SOURCE}" > doctest.pl
-
+echo "${SOURCE}"
 swipl -s doctest.pl -g "handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt
 T1=$(
 swipl -s doctest.pl -g "handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), write(Response)." -t halt | \
