@@ -2,4 +2,4 @@
 
 set -e
 
-swipl -s doctest.pl -g "run_doc_tests('README.md')." -t 'halt.'
+swipl -s doctest.pl -g "run('README.md')." -t 'halt.'

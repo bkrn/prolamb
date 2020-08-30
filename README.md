@@ -13,10 +13,10 @@ You can build a .zip file using the docker image in this repo and your own handl
 Write a handler/3:
 
 ```prolog
-%! handler(++Event:list, ++Context:list, --Response:text).
+%! example_handler(++Event:list, ++Context:list, --Response:text).
 % Clearly this will complain about singleton variables
 % but there is value to naming the variables here
-handler(json(Event), Context, Response) :- 
+example_handler(json(Event), Context, Response) :- 
   Response = '{"hello": "world"}'.
 ```
 
@@ -38,7 +38,7 @@ docker run --rm -v $PWD:/dist prolamb/prolamb:latest
 
 If you're using other source files they must be in or children of $SOURCE_DIRECTORY. Otherwise they won't make it into bundle.zip.
 
-Be sure that the handler option of your lambda is set to `file.predicate`. So if your entry file is main.pl and the predicate handler is handler/3 then the handler option should be `main.handler`.
+Be sure that the handler option of your lambda is set to `file.predicate`. So if your entry file is main.pl and the predicate handler is example_handler/3 as above then the handler option should be `main.example_handler`.
 
 ## Guide
 
@@ -49,7 +49,6 @@ Your handler should have an arity of three. The first two arguments, the event a
 For example a service that matches nicknames and fullnames might have a handler like:
 
 ```prolog
-% DOCTEST
 % this example is tested in place as a part of the build pipeline
 
 :- use_module(library(http/json)).
@@ -89,22 +88,24 @@ handler(json(Event), Context, Response) :-
             Names),
     atom_json_term(Response, json([possibleNames=Names]), []).
 
-% this is the goal that is run as part of the build pipeline.
-doctests() :-
+% these goals run as part of the build pipeline.
+doctest() :-
   % Match on fullName
-  handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response1),
-  ground(Response1),
-  Response1 = '{"possibleNames": [ {"fullname":"Nicholas", "nickName":"Nick"} ]}',
-  % Match on nickName
-  handler(json([nickName='Bob']), context(headers(['TZ'('PST')]), _), Response2),
-  ground(Response2),
-  Response2 = '{"possibleNames": [ {"fullname":"William", "nickName":"Bob"} ]}',
-  % There is no ground!
-  handler(json([]), context(headers(['TZ'('PST')]), _), Response3),
-  ground(Response3),
-  Response3 = '{\n  "possibleNames": [\n    {"fullname":"Nicholas", "nickName":"Nick"},\n    {"fullname":"William", "nickName":"Bob"},\n    {"fullname":"William", "nickName":"Robert"},\n    {"fullname":"Steven", "nickName":"Steve"}\n  ]\n}'.
+  handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response),
+  ground(Response),
+  Response = '{"possibleNames": [ {"fullname":"Nicholas", "nickName":"Nick"} ]}'.
 
-% DOCTEST
+doctest() :-
+  % Match on nickName
+  handler(json([nickName='Bob']), context(headers(['TZ'('PST')]), _), Response),
+  ground(Response),
+  Response = '{"possibleNames": [ {"fullname":"William", "nickName":"Bob"} ]}'.
+  
+doctest() :-
+  % There is no ground!
+  handler(json([]), context(headers(['TZ'('PST')]), _), Response),
+  ground(Response),
+  Response = '{\n  "possibleNames": [\n    {"fullname":"Nicholas", "nickName":"Nick"},\n    {"fullname":"William", "nickName":"Bob"},\n    {"fullname":"William", "nickName":"Robert"},\n    {"fullname":"Steven", "nickName":"Steve"}\n  ]\n}'.
 ```
 
 #### Event Argument
