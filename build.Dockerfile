@@ -34,7 +34,6 @@ RUN mkdir -p /var/task && \
     cmake \
         -DCMAKE_INSTALL_PREFIX=/var/task \
         -DSWIPL_PACKAGES_PCRE=OFF \
-        -DSWIPL_PACKAGES_ODBC=OFF \
         -DSWIPL_PACKAGES_JAVA=OFF \
         -DSWIPL_PACKAGES_X=OFF \
         -DBUILD_TESTING=OFF \
