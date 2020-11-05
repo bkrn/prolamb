@@ -2,7 +2,7 @@
 
 # Prolamb
 
-SWI-Prolog bootstrap for the AWS Lambda provided runtime
+SWI-Prolog bootstrap for the AWS Lambda provided runtime.
 
 ## What?
 
