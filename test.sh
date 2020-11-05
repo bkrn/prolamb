@@ -65,7 +65,7 @@ strip_status() {
 # invoke_function() {
 #     local RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
 #     strip_status "${RESULT}"# 
-}
+# }
 
 # Success
 # SIMPLE=$(invoke_function ProlambSimple '{}')
