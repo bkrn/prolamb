@@ -62,44 +62,44 @@ strip_status() {
     echo "${S}"
 }
 
-invoke_function() {
-    local RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
-    strip_status "${RESULT}"
+# invoke_function() {
+#     local RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
+#     strip_status "${RESULT}"# 
 }
 
 # Success
-SIMPLE=$(invoke_function ProlambSimple '{}')
-CONTEXT=$(invoke_function ProlambContext '{}' | grep -o 'LANG-en_US.UTF-8')
-EVENT=$(invoke_function ProlambEvent '{ "fullName": "William" }')
+# SIMPLE=$(invoke_function ProlambSimple '{}')
+# CONTEXT=$(invoke_function ProlambContext '{}' | grep -o 'LANG-en_US.UTF-8')
+# EVENT=$(invoke_function ProlambEvent '{ "fullName": "William" }')
 
 # Failure
-ERROR=$(invoke_function ProlambError '{}')
-FAIL=$(invoke_function ProlambFail '{}')
-UNBOUND=$(invoke_function ProlambUnbound '{}')
-FALSE=$(invoke_function ProlambFalse '{}')
-JSON_ERROR=$(invoke_function ProlambJsonError '{}')
-SIMPLE_JSON_ERROR=$(invoke_function ProlambSimpleJsonError '{}')
-BAD_MODULE=$(invoke_function ProlambBadModule '{}')
-BAD_CALLABLE=$(invoke_function ProlambBadCallable '{}')
+# ERROR=$(invoke_function ProlambError '{}')
+# FAIL=$(invoke_function ProlambFail '{}')
+# UNBOUND=$(invoke_function ProlambUnbound '{}')
+# FALSE=$(invoke_function ProlambFalse '{}')
+# JSON_ERROR=$(invoke_function ProlambJsonError '{}')
+# SIMPLE_JSON_ERROR=$(invoke_function ProlambSimpleJsonError '{}')
+# BAD_MODULE=$(invoke_function ProlambBadModule '{}')
+# BAD_CALLABLE=$(invoke_function ProlambBadCallable '{}')
 
-echo "Adding assert"
+# echo "Adding assert"
 
-[ -f assert.sh ] || wget https://raw.github.com/lehmannro/assert.sh/v1.1/assert.sh -O assert.sh &>/dev/null
-. assert.sh
+# [ -f assert.sh ] || wget https://raw.github.com/lehmannro/assert.sh/v1.1/assert.sh -O assert.sh &>/dev/null
+# . assert.sh
 
 # Test success
-assert "echo '${SIMPLE}'" '{"fullName":"William"}'
-assert "echo '${CONTEXT}'" 'LANG-en_US.UTF-8'
-assert "echo '${EVENT}'" '{"nickName":"Bob"}'
+# assert "echo '${SIMPLE}'" '{"fullName":"William"}'
+# assert "echo '${CONTEXT}'" 'LANG-en_US.UTF-8'
+# assert "echo '${EVENT}'" '{"nickName":"Bob"}'
 
 # Test failure
-assert "echo '${FAIL}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
-assert "echo '${FALSE}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
-assert "echo '${UNBOUND}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
-assert "echo '${ERROR}'" '{"errorMessage":"This space intentionally left blank","errorType":"HandlerException"}'
-assert "echo '${JSON_ERROR}'" '{"errorMessage":"I am JSON","errorType":"JsonError"}'
-assert "echo '${SIMPLE_JSON_ERROR}'" '{"errorMessage":"json([name=SomeError,message=Description of Error])","errorType":"HandlerException"}'
-assert "echo '${BAD_MODULE}'" '{"errorMessage":"Could not find module named grain","errorType":"InvalidHandlerModule"}'
-assert "echo '${BAD_CALLABLE}'" '{"errorMessage":"Could not find callable named hand","errorType":"InvalidHandlerCallable"}'
+# assert "echo '${FAIL}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+# assert "echo '${FALSE}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+# assert "echo '${UNBOUND}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+# assert "echo '${ERROR}'" '{"errorMessage":"This space intentionally left blank","errorType":"HandlerException"}'
+# assert "echo '${JSON_ERROR}'" '{"errorMessage":"I am JSON","errorType":"JsonError"}'
+# assert "echo '${SIMPLE_JSON_ERROR}'" '{"errorMessage":"json([name=SomeError,message=Description of Error])","errorType":"HandlerException"}'
+# assert "echo '${BAD_MODULE}'" '{"errorMessage":"Could not find module named grain","errorType":"InvalidHandlerModule"}'
+# assert "echo '${BAD_CALLABLE}'" '{"errorMessage":"Could not find callable named hand","errorType":"InvalidHandlerCallable"}'
 
-assert_end "simple invocation"
+# assert_end "simple invocation"
