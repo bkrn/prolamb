@@ -9,6 +9,18 @@ WORKDIR /build
 
 VOLUME /dist
 
+# Install postgres to build odbc driver
+RUN mkdir -p /var/task && mkdir -p /var/task/lib && \
+  yum install -y \
+  unixODBC \
+  unixODBC-devel \
+  libpq-devel \
+  postgresql-devel && \
+  cp /usr/lib64/libodbc.so.2 /var/task/lib && \
+  cp /usr/lib64/libpq.so.5 /var/task/lib && \
+  cp /usr/lib64/libodbcinst.so.2 /var/task/lib
+
+
 # Build a modern version of cmake in order to build swipl
 RUN curl -L https://github.com/Kitware/CMake/releases/download/v${CMAKE}/cmake-${CMAKE}.tar.gz -o cmake-${CMAKE}.tar.gz &> /dev/null && \
     SUM=$(sha256sum cmake-${CMAKE}.tar.gz | cut -d ' ' -f 1) && \
@@ -24,8 +36,7 @@ RUN curl -L https://github.com/Kitware/CMake/releases/download/v${CMAKE}/cmake-$
     cd .. && rm -rf * > /dev/nul
 
 # Build swipl
-RUN mkdir -p /var/task && \
-    curl https://www.swi-prolog.org/download/stable/src/swipl-${SWIPL}.tar.gz -o swipl-${SWIPL}.tar.gz &> /dev/null && \
+RUN curl https://www.swi-prolog.org/download/stable/src/swipl-${SWIPL}.tar.gz -o swipl-${SWIPL}.tar.gz &> /dev/null && \
     SUM=$(sha256sum swipl-${SWIPL}.tar.gz | cut -d ' ' -f 1) && \
     [ ${SUM} = ${SWIPL_CHECKSUM} ] && \
     tar xfz swipl-${SWIPL}.tar.gz > /dev/null && \
@@ -46,19 +57,8 @@ RUN mkdir -p /var/task && \
     cd .. && rm -rf * > /dev/null && \
     rm -rf /var/task/bin > /dev/null && \
     rm -rf /var/task/share > /dev/null
-    
-# Install postgres to build odbc driver
-RUN yum install -y \
-  unixODBC \
-  unixODBC-devel \
-  libpq-devel \
-  postgresql-devel && \
-  cp /usr/lib64/libodbc.so.2 /var/task/lib && \
-  cp /usr/lib64/libpq.so.5 /var/task/lib && \
-  cp /usr/lib64/libodbcinst.so.2 /var/task/lib
-
-RUN mkdir -p /var/task/lib && \
-  PG_ODBC="10.03.0000" && \
+   
+RUN PG_ODBC="10.03.0000" && \
   PG_ODBC_URL="https://ftp.postgresql.org/pub/odbc/versions/src/psqlodbc-${PG_ODBC}.tar.gz" && \
   curl ${PG_ODBC_URL} --output psqlodbc-${PG_ODBC}.tar.gz && \
   tar -zxvf psqlodbc-${PG_ODBC}.tar.gz && \
