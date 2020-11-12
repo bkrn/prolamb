@@ -46,6 +46,26 @@ RUN mkdir -p /var/task && \
     cd .. && rm -rf * > /dev/null && \
     rm -rf /var/task/bin > /dev/null && \
     rm -rf /var/task/share > /dev/null
+    
+# Install postgres to build odbc driver
+RUN yum install -y \
+  unixODBC \
+  unixODBC-devel \
+  libpq-devel \
+  postgresql-devel && \
+  cp /usr/lib64/libodbc.so.2 /var/task/lib && \
+  cp /usr/lib64/libpq.so.5 /var/task/lib && \
+  cp /usr/lib64/libodbcinst.so.2 /var/task/lib
+
+RUN mkdir -p /var/task/lib && \
+  PG_ODBC="10.03.0000" && \
+  PG_ODBC_URL="https://ftp.postgresql.org/pub/odbc/versions/src/psqlodbc-${PG_ODBC}.tar.gz" && \
+  curl ${PG_ODBC_URL} --output psqlodbc-${PG_ODBC}.tar.gz && \
+  tar -zxvf psqlodbc-${PG_ODBC}.tar.gz && \
+  cd psqlodbc-${PG_ODBC} && \
+  ./configure && \
+  make && make install && \
+  cp /usr/local/lib/psql* /var/task/lib
 
 COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
