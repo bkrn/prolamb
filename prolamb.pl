@@ -4,17 +4,11 @@
 
 :- initialization go.
 
-:- multifile(json:json_write_hook/4).
-
 :- use_module(library(pairs)).
 :- use_module(library(http/json)).
 :- use_module(library(http/http_json)).
 :- use_module(library(apply), [maplist/3]).
 :- use_module(library(http/http_client), [http_get/3, http_post/4]).
-
-json:json_write_hook(N, Stream, _State, _Options):-
-    float(N),
-    format(Stream, '~6f', [N]).
 
 entrance(Mod, Pred) :-
     getenv("_HANDLER", E),
