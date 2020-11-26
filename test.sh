@@ -29,10 +29,6 @@ invoke_function() {
     echo $RESULT | awk -F}{ '{print $1"}"}' | jq -Sc
 }
 
-expected() {
-    echo $1 | jq -Sc
-}
-
 # Expect Success
 SIMPLE=$(invoke_function ProlambSimple '{}')
 CONTEXT=$(invoke_function ProlambContext '{}' | grep -o 'LANG-en_US.UTF-8')

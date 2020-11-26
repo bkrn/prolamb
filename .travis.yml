@@ -15,16 +15,17 @@ addons:
 
 before_install:
   - curl -fSL "https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip" -o terraform.zip &> /dev/null
-  - unzip terraform.zip -d /opt/terraform &> /dev/null
-  - ln -s /opt/terraform/terraform /usr/bin/terraform &> /dev/null
+  - sudo unzip terraform.zip -d /opt/terraform &> /dev/null
+  - sudo ln -s /opt/terraform/terraform /usr/bin/terraform &> /dev/null
   - rm -f terraform.zip &> /dev/null
   - curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" &> /dev/null
   - python3 get-pip.py --user &> /dev/null
   - python3 -m pip install -Iv --user "botocore==1.17.36" &> /dev/null
   - python3 -m pip install -Iv --user "awscli==1.18.113" &> /dev/null
-  - add-apt-repository -y ppa:swi-prolog/stable &> /dev/null
-  - apt-get update -y &> /dev/null
-  - apt-get install -y swi-prolog jq &> /dev/null
+  - python3 -m pip install -Iv --user "awscli-local==0.7" &> /dev/null
+  - sudo add-apt-repository -y ppa:swi-prolog/stable &> /dev/null
+  - sudo apt-get update -y &> /dev/null
+  - sudo apt-get install -y swi-prolog jq &> /dev/null
   
 jobs:
   include:
