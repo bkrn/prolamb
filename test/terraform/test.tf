@@ -16,7 +16,7 @@ resource "aws_lambda_function" "simple_lambda" {
   function_name = "ProlambSimple"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/simple/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/simple/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -26,7 +26,7 @@ resource "aws_lambda_function" "json_error_lambda" {
   function_name = "ProlambJsonError"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/json_error/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/json_error/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -36,7 +36,7 @@ resource "aws_lambda_function" "simple_json_error_lambda" {
   function_name = "ProlambSimpleJsonError"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/simple_json_error/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/simple_json_error/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -46,7 +46,7 @@ resource "aws_lambda_function" "error_lambda" {
   function_name = "ProlambError"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/error/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/error/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -56,7 +56,7 @@ resource "aws_lambda_function" "bad_module_lambda" {
   function_name = "ProlambBadModule"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "grain.handler"
-  source_code_hash = "${filebase64sha256("../src/simple/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/simple/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -66,7 +66,7 @@ resource "aws_lambda_function" "bad_callable_lambda" {
   function_name = "ProlambBadCallable"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.hand"
-  source_code_hash = "${filebase64sha256("../src/simple/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/simple/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -76,7 +76,7 @@ resource "aws_lambda_function" "context_lambda" {
   function_name = "ProlambContext"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/context/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/context/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -86,7 +86,7 @@ resource "aws_lambda_function" "event_lambda" {
   function_name = "ProlambEvent"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/event/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/event/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -96,7 +96,7 @@ resource "aws_lambda_function" "fail_lambda" {
   function_name = "ProlambFail"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/fail/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/fail/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -106,7 +106,7 @@ resource "aws_lambda_function" "false_lambda" {
   function_name = "ProlambFalse"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/false/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/false/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
@@ -116,7 +116,7 @@ resource "aws_lambda_function" "unbound_lambda" {
   function_name = "ProlambUnbound"
   role          = "arn:aws:iam::869128890907:role/iam_for_lambda"
   handler       = "main.handler"
-  source_code_hash = "${filebase64sha256("../src/unbound/bundle.zip")}"
+  source_code_hash = filebase64sha256("../src/unbound/bundle.zip")
   runtime = "provided"
   timeout = 15
 }
