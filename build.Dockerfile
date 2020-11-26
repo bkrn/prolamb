@@ -15,7 +15,7 @@ RUN mkdir -p /var/task && mkdir -p /var/task/lib && \
   unixODBC \
   unixODBC-devel \
   libpq-devel \
-  postgresql-devel && \
+  postgresql-devel > /dev/null && \
   cp /usr/lib64/libodbc.so.2 /var/task/lib && \
   cp /usr/lib64/libpq.so.5 /var/task/lib && \
   cp /usr/lib64/libodbcinst.so.2 /var/task/lib
@@ -59,12 +59,12 @@ RUN curl https://www.swi-prolog.org/download/stable/src/swipl-${SWIPL}.tar.gz -o
     rm -rf /var/task/share > /dev/null
    
 RUN PG_ODBC="10.03.0000" && \
-  PG_ODBC_URL="https://ftp.postgresql.org/pub/odbc/versions/src/psqlodbc-${PG_ODBC}.tar.gz" && \
-  curl ${PG_ODBC_URL} --output psqlodbc-${PG_ODBC}.tar.gz && \
-  tar -zxvf psqlodbc-${PG_ODBC}.tar.gz && \
+  PG_ODBC_URL="https://ftp.postgresql.org/pub/odbc/versions/src/psqlodbc-${PG_ODBC}.tar.gz" > /dev/null && \
+  curl ${PG_ODBC_URL} --output psqlodbc-${PG_ODBC}.tar.gz > /dev/null && \
+  tar -zxvf psqlodbc-${PG_ODBC}.tar.gz > /dev/null && \
   cd psqlodbc-${PG_ODBC} && \
-  ./configure && \
-  make && make install && \
+  ./configure  > /dev/null && \
+  make > /dev/null && make install > /dev/null && \
   cp /usr/local/lib/psql* /var/task/lib
 
 COPY build.sh /var/task/
