@@ -38,7 +38,7 @@ cd ..
 echo "Running tests"
 
 invoke_function() {
-    jq -Ssc '.[0]' <(aws lambda invoke --function-name $1 --payload "$2" /dev/stdout)
+    jq -Ssc '.[0]' <(aws lambda invoke --cli-binary-format raw-in-base64-out --function-name $1 --payload "$2" /dev/stdout)
 }
 
 # Expect Success
