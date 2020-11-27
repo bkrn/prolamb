@@ -38,8 +38,7 @@ cd ..
 echo "Running tests"
 
 invoke_function() {
-    local RESULT=$(aws lambda invoke --function-name $1 --payload "$2" /dev/stdout)
-    echo $RESULT | jq -Ssc '.[0]'
+    jq -Ssc '.[0]' <(aws lambda invoke --function-name $1 --payload "$2" /dev/stdout)
 }
 
 # Expect Success
