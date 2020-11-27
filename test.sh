@@ -39,7 +39,7 @@ echo "Running tests"
 
 invoke_function() {
     local RESULT=$(aws lambda invoke --function-name $1 --payload "$2" /dev/stdout)
-    echo $RESULT | awk -F}{ '{print $1"}"}' | jq -Sc
+    echo $RESULT # | awk -F}{ '{print $1"}"}' | jq -Sc
 }
 
 # Expect Success
