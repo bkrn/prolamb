@@ -40,17 +40,17 @@ if [ "${CI}" = "true" ]; then
     terraform import aws_lambda_function.fail_lambda ProlambFail
     terraform import aws_lambda_function.false_lambda ProlambFalse
     terraform import aws_lambda_function.unbound_lambda ProlambUnbound
-    terraform import aws_lambda_function.simple_lambda ProlambSimpleStatic
-    terraform import aws_lambda_function.json_error_lambda ProlambJsonErrorStatic
-    terraform import aws_lambda_function.simple_json_error_lambda ProlambSimpleJsonErrorStatic
-    terraform import aws_lambda_function.error_lambda ProlambErrorStatic
-    terraform import aws_lambda_function.bad_module_lambda ProlambBadModuleStatic
-    terraform import aws_lambda_function.bad_callable_lambda ProlambBadCallableStatic
-    terraform import aws_lambda_function.context_lambda ProlambContextStatic
-    terraform import aws_lambda_function.event_lambda ProlambEventStatic
-    terraform import aws_lambda_function.fail_lambda ProlambFailStatic
-    terraform import aws_lambda_function.false_lambda ProlambFalseStatic
-    terraform import aws_lambda_function.unbound_lambda ProlambUnboundStatic
+    terraform import aws_lambda_function.simple_lambda_static ProlambSimpleStatic
+    terraform import aws_lambda_function.json_error_lambda_static ProlambJsonErrorStatic
+    terraform import aws_lambda_function.simple_json_error_lambda_static ProlambSimpleJsonErrorStatic
+    terraform import aws_lambda_function.error_lambda_static ProlambErrorStatic
+    terraform import aws_lambda_function.bad_module_lambda_static ProlambBadModuleStatic
+    terraform import aws_lambda_function.bad_callable_lambda_static ProlambBadCallableStatic
+    terraform import aws_lambda_function.context_lambda_static ProlambContextStatic
+    terraform import aws_lambda_function.event_lambda_static ProlambEventStatic
+    terraform import aws_lambda_function.fail_lambda_static ProlambFailStatic
+    terraform import aws_lambda_function.false_lambda_static ProlambFalseStatic
+    terraform import aws_lambda_function.unbound_lambda_static ProlambUnboundStatic
 fi
 terraform apply -auto-approve
 cd ..

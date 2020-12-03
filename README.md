@@ -99,19 +99,19 @@ handler(json(Event), _Context, _Response) :-
 % these goals run as part of the build pipeline.
 doctest() :-
   % Match on fullName
-  handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response),
+  handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), !,
   ground(Response),
   Response = '{"possibleNames": [ {"fullname":"Nicholas", "nickName":"Nick"} ]}'.
 
 doctest() :-
   % Match on nickName
-  handler(json([nickName='Bob']), context(headers(['TZ'('PST')]), _), Response),
+  handler(json([nickName='Bob']), context(headers(['TZ'('PST')]), _), Response), !,
   ground(Response),
   Response = '{"possibleNames": [ {"fullname":"William", "nickName":"Bob"} ]}'.
   
 doctest() :-
   % There is no ground!
-  handler(json([]), context(headers(['TZ'('PST')]), _), Response),
+  handler(json([]), context(headers(['TZ'('PST')]), _), Response), !,
   ground(Response),
   Response = '{\n  "possibleNames": [\n    {"fullname":"Nicholas", "nickName":"Nick"},\n    {"fullname":"William", "nickName":"Bob"},\n    {"fullname":"William", "nickName":"Robert"},\n    {"fullname":"Steven", "nickName":"Steve"}\n  ]\n}'.
 ```
