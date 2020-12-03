@@ -1,8 +1,4 @@
-#! /var/task/lib/swipl/bin/x86_64-linux/swipl
-
 :- set_prolog_flag(verbose, silent).
-
-:- initialization go.
 
 :- use_module(library(pairs)).
 :- use_module(library(http/json)).
@@ -65,20 +61,24 @@ main_loop(Pred) :-
     main_loop(Pred).
 
 load_handler(Mod) :-
-    catch((ensure_loaded(Mod)), _, (
-        format(string(Message), "Could not find module named '~w'", Mod),
-        post_init_error(json([errorType="InvalidHandlerModule", 
-                              errorMessage=Message])), 
-        false)).
+    catch(ensure_loaded(Mod), _, exists_file('STATIC_MODULE')).
+
+load_handler(Mod) :-
+    writeln('Could not find module'),
+    format(string(Message), "Could not find module named '~w'", Mod),
+    post_init_error(json([errorType="InvalidHandlerModule", 
+                                errorMessage=Message])), fail.
 
 valid_handler(Pred) :-
-    current_functor(Pred, 3);
-    (format(string(Message), "Could not find callable named '~w'", Pred),
-    post_init_error(json([errorType="InvalidHandlerCallable", 
-                          errorMessage=Message])), 
-    false).
+    current_functor(Pred, 3).
 
-go :-
+valid_handler(Pred) :-
+    writeln('Could not find handler'),
+    format(string(Message), "Could not find callable named '~w'", Pred),
+    post_init_error(json([errorType="InvalidHandlerCallable", 
+                            errorMessage=Message])), fail.
+                        
+prolamb_go :-
     entrance(Mod, Pred),
     (load_handler(Mod), valid_handler(Pred)) -> (
             main_loop(Pred)

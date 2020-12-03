@@ -42,6 +42,14 @@ Be sure that the handler option of your lambda is set to `file.predicate`. So if
 
 ## Guide
 
+### Compiling as a saved state
+
+By defaut the project will be built to run from source code entering in dynamic.pl which is a simple wrapper around prolamb.pl to avoid attempting to compile with an initialization clause.
+
+If the contianer is run with `-e STATIC_MODULE=${MODULE_NAME}` (where module name is the file name same as would be used in `load_files`) then the program is compiled down to a saved state. This should speed up load times and decrease bundle size but prevents dynamic loading of code. Notably the module name part of the lambda handler option is ignored in this case since swipl should already have loaded the predicate into the saved state. 
+
+The saved state is built with `--foreign=save`
+
 ### Writing a Handler
 
 Your handler should have an arity of three. The first two arguments, the event and context, are grounded and contain the invocation inputs. The last, the function's response, is bound to the the text type you want your function to respond with by your handler predicate.
@@ -80,7 +88,7 @@ names('Nicholas', 'Santa', Context) :-
 % The response is described by the JSON schema:
 % {"type": "object", "required": ["possibleNames], "properties": {"possibleNames: {"type": "array", "items": 
 %   {"type": "object", "properties": {"fullName": {"type": "string"}, "nickName": {"type": "string"}}}}}}
-handler(json(Event), Context, Response) :-
+handler(json(Event), _Context, _Response) :-
     (member(fullName=FullName, Event); true),
     (member(nickName=NickName, Event); true),
     findall(json([fullname=FullName, nickName=NickName]), 

@@ -69,8 +69,11 @@ RUN PG_ODBC="10.03.0000" && \
 
 COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
-RUN mv /var/task/prolamb.pl /var/task/bootstrap && chmod 777 /var/task/bootstrap
+COPY dynamic.pl /var/task/
+RUN mv /var/task/dynamic.pl /var/task/bootstrap && chmod 777 /var/task/bootstrap
 
 WORKDIR /var/task
 
+ENV STATIC_MODULE=""
+ENV BUNDLE_NAME="bundle.zip"
 CMD ["./build.sh"]

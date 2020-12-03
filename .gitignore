@@ -1,7 +1,9 @@
 .vscode
 .DS_Store
 
+*.log
 bundle.zip
+static_bundle.zip
 test/terraform/.terraform
 test/terraform/terraform.*
 test/localstack.log
