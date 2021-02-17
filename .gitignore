@@ -5,6 +5,7 @@
 bundle.zip
 static_bundle.zip
 test/terraform/.terraform
+test/terraform/.terraform.lock.hcl
 test/terraform/terraform.*
 test/localstack.log
 **/assert.sh

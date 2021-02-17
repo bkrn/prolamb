@@ -3,15 +3,15 @@ set -e
 
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
 echo "Build Prolamb Docker Image"
-docker build --tag prolamb/prolamb:latest -f build.Dockerfile .
+docker build --build-arg SF_ODBC=false --build-arg PG_ODBC=false --tag prolamb/prolamb:latest -f build.Dockerfile .
 cd test/src
 
 dirlist=$(find . -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
 do
     echo "Build ${dir} test lambda .zip"
-    cd $dir && rm -f bundle.zip || true
-    docker run --rm -v $PWD:/dist prolamb/prolamb:latest # &> /dev/null
+    cd $dir && rm -f *.zip || true
+    docker run --rm -v $PWD:/dist prolamb/prolamb:latest &> /dev/null
     cd ..
 done
 
@@ -19,7 +19,7 @@ dirlist=$(find . -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
 do
     echo "Build ${dir} static test lambda .zip"
-    cd $dir && rm -f static_bundle.zip || true
+    cd $dir
     docker run --rm -e "STATIC_MODULE=main" -e "BUNDLE_NAME=static_bundle.zip" -v $PWD:/dist prolamb/prolamb:latest &> /dev/null
     cd ..
 done

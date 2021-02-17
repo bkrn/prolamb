@@ -7,6 +7,8 @@ ARG SWIPL_CHECKSUM=9403972f9d87f1f4971fbd4a5644b4976b1b18fc174be84506c6b713bd1f9
 
 ARG PG_ODBC_VERSION=10.03.0000
 ARG SF_ODBC_VERSION=2.22.5
+ARG SF_ODBC=true
+ARG PG_ODBC=true
 
 WORKDIR /build
 
@@ -62,19 +64,20 @@ RUN curl https://www.swi-prolog.org/download/stable/src/swipl-${SWIPL}.tar.gz -o
     rm -rf /var/task/share &> /dev/null
 
 # Add postgres ODBC driver
-RUN PG_ODBC_URL="https://ftp.postgresql.org/pub/odbc/versions/src/psqlodbc-${PG_ODBC_VERSION}.tar.gz" &> /dev/null && \
+RUN [ "${PG_ODBC}" = "true" ] && { PG_ODBC_URL="https://ftp.postgresql.org/pub/odbc/versions/src/psqlodbc-${PG_ODBC_VERSION}.tar.gz" &> /dev/null && \
   curl ${PG_ODBC_URL} --output psqlodbc-${PG_ODBC_VERSION}.tar.gz &> /dev/null && \
   tar -zxvf psqlodbc-${PG_ODBC_VERSION}.tar.gz &> /dev/null && \
   cd psqlodbc-${PG_ODBC_VERSION} && \
   ./configure  &> /dev/null && \
   make &> /dev/null && make install &> /dev/null && \
-  cp /usr/local/lib/psql* /var/task/lib
+  cp /usr/local/lib/psql* /var/task/lib; } || true
 
 # Add snowflake ODBC driver
-RUN SF_ODBC_URL="https://sfc-repo.snowflakecomputing.com/odbc/linux/${SF_ODBC_VERSION}/snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm" &> /dev/null && \
+# /var/task/lib/snowflake/odbc/lib
+RUN [ "${SF_ODBC}" = "true" ] && { SF_ODBC_URL="https://sfc-repo.snowflakecomputing.com/odbc/linux/${SF_ODBC_VERSION}/snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm" &> /dev/null && \
   curl ${SF_ODBC_URL} --output snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm &> /dev/null && \
   yum install -y snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm && \
-  cp -r /usr/lib64/snowflake /var/task/lib
+  cp -r /usr/lib64/snowflake /var/task/lib; } || true
 
 COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
