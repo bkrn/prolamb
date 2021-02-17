@@ -11,7 +11,7 @@ for dir in $dirlist
 do
     echo "Build ${dir} test lambda .zip"
     cd $dir && rm -f bundle.zip || true
-    docker run --rm -v $PWD:/dist prolamb/prolamb:latest &> /dev/null
+    docker run --rm -v $PWD:/dist prolamb/prolamb:latest # &> /dev/null
     cd ..
 done
 

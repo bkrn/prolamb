@@ -76,7 +76,7 @@ RUN SF_ODBC_URL="https://sfc-repo.snowflakecomputing.com/odbc/linux/${SF_ODBC_VE
   yum install -y snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm && \
   cp -r /usr/lib64/snowflake /var/task/lib
 
-COPY build.sh /var/task/deb
+COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
 COPY dynamic.pl /var/task/
 RUN mv /var/task/dynamic.pl /var/task/bootstrap && chmod 777 /var/task/bootstrap
