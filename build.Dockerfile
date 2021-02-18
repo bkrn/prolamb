@@ -77,7 +77,9 @@ RUN [ "${PG_ODBC}" = "true" ] && { PG_ODBC_URL="https://ftp.postgresql.org/pub/o
 RUN [ "${SF_ODBC}" = "true" ] && { SF_ODBC_URL="https://sfc-repo.snowflakecomputing.com/odbc/linux/${SF_ODBC_VERSION}/snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm" &> /dev/null && \
   curl ${SF_ODBC_URL} --output snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm &> /dev/null && \
   yum install -y snowflake-odbc-${SF_ODBC_VERSION}.x86_64.rpm && \
-  cp -r /usr/lib64/snowflake /var/task/lib; } || true
+  cp -r /usr/lib64/snowflake /var/task/lib && \
+  sed -i 's=usr/lib64=var/task/lib=g' /var/task/lib/snowflake/odbc/lib/simba.snowflake.ini && \
+  cat /var/task/lib/snowflake/odbc/lib/simba.snowflake.ini; } || true
 
 COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
