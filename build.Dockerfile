@@ -85,7 +85,7 @@ COPY simba.snowflake.ini /var/task/lib/
 COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
 COPY dynamic.pl /var/task/
-RUN mv /var/task/dynamic.pl /var/task/bootstrap && chmod 777 /var/task/bootstrap
+RUN mv /var/task/dynamic.pl /var/task/bootstrap && chmod -R 777 /var/task
 
 WORKDIR /var/task
 
