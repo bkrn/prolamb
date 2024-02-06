@@ -1,27 +1,36 @@
-FROM lambci/lambda:build-provided
+FROM amazonlinux:2023
 
-ARG SWIPL=8.0.3
-ARG CMAKE=3.15.5
-ARG CMAKE_CHECKSUM=fbdd7cef15c0ced06bb13024bfda0ecc0dedbcaaaa6b8a5d368c75255243beb4
-ARG SWIPL_CHECKSUM=cee59c0a477c8166d722703f6e52f962028f3ac43a5f41240ecb45dbdbe2d6ae
+ARG SWIPL=9.2.0
+ARG SWIPL_CHECKSUM=10d90b15734d14d0d7972dc11a3584defd300d65a9f0b1185821af8c3896da5e
 
 WORKDIR /build
 
 VOLUME /dist
 
-# Build a modern version of cmake in order to build swipl
-RUN curl -L https://github.com/Kitware/CMake/releases/download/v${CMAKE}/cmake-${CMAKE}.tar.gz -o cmake-${CMAKE}.tar.gz &> /dev/null && \
-    SUM=$(sha256sum cmake-${CMAKE}.tar.gz | cut -d ' ' -f 1) && \
-    [ ${SUM} = ${CMAKE_CHECKSUM} ] && \
-    tar xfz cmake-${CMAKE}.tar.gz > /dev/null && \  
-    cd cmake-3.15.5 && \
-    echo "cmake bootstrap" && \
-    ./bootstrap > /dev/null && \
-    echo "cmake make" && \
-    make > /dev/null && \ 
-    echo "cmake make install" && \     
-    make install > /dev/null && \
-    cd .. && rm -rf * > /dev/nul
+RUN dnf install -y \
+  gcc \
+  gcc-c++ \
+  tar \
+  gzip \
+  cmake \
+  ninja-build \
+  libunwind \
+  gperftools-devel \
+  freetype-devel \
+  gmp-devel \
+  jpackage-utils \
+  libICE-devel \
+  libjpeg-turbo-devel \
+  libSM-devel \
+  ncurses-devel \
+  openssl-devel \
+  pkgconfig \
+  readline-devel \
+  libedit-devel \
+  zlib-devel \
+  uuid-devel \
+  libarchive-devel \
+  libyaml-devel &> /dev/null
 
 # Build swipl
 RUN mkdir -p /var/task && \
@@ -37,6 +46,8 @@ RUN mkdir -p /var/task && \
         -DSWIPL_PACKAGES_ODBC=OFF \
         -DSWIPL_PACKAGES_JAVA=OFF \
         -DSWIPL_PACKAGES_X=OFF \
+        -DUSE_TCMALLOC=OFF \
+        -DSWIPL_SHARED_LIB=OFF \
         -DBUILD_TESTING=OFF \
         -DINSTALL_TESTS=OFF \
         -DINSTALL_DOCUMENTATION=OFF &> /dev/null && \
@@ -47,6 +58,8 @@ RUN mkdir -p /var/task && \
     cd .. && rm -rf * > /dev/null && \
     rm -rf /var/task/bin > /dev/null && \
     rm -rf /var/task/share > /dev/null
+
+RUN dnf clean all
 
 COPY build.sh /var/task/
 COPY prolamb.pl /var/task/
