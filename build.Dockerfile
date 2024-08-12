@@ -38,15 +38,17 @@ RUN dnf install -y \
   libyaml-devel &> /dev/null
 
 # Install postgres to build odbc driver
-RUN mkdir -p /var/task && mkdir -p /var/task/lib && \
-  yum install -y \
+RUN [ "${PG_ODBC}" = "true" ] || [ "${SF_ODBC}" = "true" ] && \
+  echo "Install ODBC and postgres libs" && \
+  mkdir -p /var/task && mkdir -p /var/task/lib && \
+  dnf install -y \
   unixODBC \
   unixODBC-devel \
   libpq-devel \
   postgresql-devel &> /dev/null && \
   cp /usr/lib64/libodbc.so.2 /var/task/lib && \
   cp /usr/lib64/libpq.so.5 /var/task/lib && \
-  cp /usr/lib64/libodbcinst.so.2 /var/task/lib
+  cp /usr/lib64/libodbcinst.so.2 /var/task/lib || echo "Skipping ODBC"
 
 # Build swipl
 RUN curl https://www.swi-prolog.org/download/stable/src/swipl-${SWIPL}.tar.gz -o swipl-${SWIPL}.tar.gz &> /dev/null && \
@@ -80,7 +82,7 @@ RUN [ "${PG_ODBC}" = "true" ] && { PG_ODBC_URL="https://ftp.postgresql.org/pub/o
   cd psqlodbc-${PG_ODBC_VERSION} && \
   ./configure  &> /dev/null && \
   make &> /dev/null && make install &> /dev/null && \
-  cp /usr/local/lib/psql* /var/task/lib; } || true
+  cp /usr/local/lib/psql* /var/task/lib; } ||  echo "Skipping Snowflake"
 
 # Add snowflake ODBC driver
 # /var/task/lib/snowflake/odbc/lib
@@ -89,7 +91,7 @@ RUN [ "${SF_ODBC}" = "true" ] && { SF_ODBC_URL="https://sfc-repo.snowflakecomput
   tar -zxvf snowflake_linux_x8664_odbc-${SF_ODBC_VERSION}.tgz && \
   cp -r snowflake_odbc/lib/* /var/task/lib && \
   cp -r snowflake_odbc/conf /var/task/lib && \
-  cp -r snowflake_odbc/ErrorMessages /var/task/lib ; } || true
+  cp -r snowflake_odbc/ErrorMessages /var/task/lib ; } || echo "Skipping Postgres"
 
 COPY simba.snowflake.ini /var/task/lib/
 
