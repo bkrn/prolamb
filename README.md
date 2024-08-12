@@ -2,7 +2,7 @@
 
 # Prolamb
 
-SWI-Prolog bootstrap for the AWS Lambda provided runtime
+SWI-Prolog bootstrap for the AWS Lambda provided runtime.
 
 ## What?
 
@@ -13,10 +13,10 @@ You can build a .zip file using the docker image in this repo and your own handl
 Write a handler/3:
 
 ```prolog
-%! handler(++Event:list, ++Context:list, --Response:text).
+%! example_handler(++Event:list, ++Context:list, --Response:text).
 % Clearly this will complain about singleton variables
 % but there is value to naming the variables here
-handler(json(Event), Context, Response) :- 
+example_handler(json(Event), Context, Response) :- 
   Response = '{"hello": "world"}'.
 ```
 
@@ -25,12 +25,12 @@ Place it into some file like `main.pl`
 then build your bundle like:
 
 ```sh
-docker pull bkrn/prolamb:latest
+docker pull prolamb/prolamb:latest
 # location of main.pl
 cd $SOURCE_DIRECTORY 
 # Map your current directory (location of your SWI-prolog source code)
 # into the /dist directory of the build container using volumes
-docker run --rm -v $PWD:/dist bkrn/prolamb:latest
+docker run --rm -v $PWD:/dist prolamb/prolamb:latest
 # After the build is complete you'll have a brand new bundle.zip
 # archive that can be used in a lambda instance with the "provided" 
 # runtime
@@ -38,9 +38,17 @@ docker run --rm -v $PWD:/dist bkrn/prolamb:latest
 
 If you're using other source files they must be in or children of $SOURCE_DIRECTORY. Otherwise they won't make it into bundle.zip.
 
-Be sure that the handler option of your lambda is set to `file.predicate`. So if your entry file is main.pl and the predicate handler is handler/3 then the handler option should be `main.handler`.
+Be sure that the handler option of your lambda is set to `file.predicate`. So if your entry file is main.pl and the predicate handler is example_handler/3 as above then the handler option should be `main.example_handler`.
 
 ## Guide
+
+### Compiling as a saved state
+
+By defaut the project will be built to run from source code entering in dynamic.pl which is a simple wrapper around prolamb.pl to avoid attempting to compile with an initialization clause.
+
+If the contianer is run with `-e STATIC_MODULE=${MODULE_NAME}` (where module name is the file name same as would be used in `load_files`) then the program is compiled down to a saved state. This should speed up load times and decrease bundle size but prevents dynamic loading of code. Notably the module name part of the lambda handler option is ignored in this case since swipl should already have loaded the predicate into the saved state. 
+
+The saved state is built with `--foreign=save`
 
 ### Writing a Handler
 
@@ -49,13 +57,10 @@ Your handler should have an arity of three. The first two arguments, the event a
 For example a service that matches nicknames and fullnames might have a handler like:
 
 ```prolog
-% DOCTEST
 % this example is tested in place as a part of the build pipeline
 
 :- use_module(library(http/json)).
 :- use_module(library(date)).
-
-
 
 lambda_local_datetime(context(headers(H), _), DT) :-
   member('TZ'(TimeZone), H),
@@ -83,14 +88,32 @@ names('Nicholas', 'Santa', Context) :-
 % The response is described by the JSON schema:
 % {"type": "object", "required": ["possibleNames], "properties": {"possibleNames: {"type": "array", "items": 
 %   {"type": "object", "properties": {"fullName": {"type": "string"}, "nickName": {"type": "string"}}}}}}
-handler(json(Event), Context, Response) :-
+handler(json(Event), _Context, _Response) :-
     (member(fullName=FullName, Event); true),
     (member(nickName=NickName, Event); true),
     findall(json([fullname=FullName, nickName=NickName]), 
             names(FullName, NickName, Context), 
             Names),
     atom_json_term(Response, json([possibleNames=Names]), []).
-% DOCTEST
+
+% these goals run as part of the build pipeline.
+doctest() :-
+  % Match on fullName
+  handler(json([fullName='Nicholas']), context(headers(['TZ'('PST')]), _), Response), !,
+  ground(Response),
+  Response = '{"possibleNames": [ {"fullname":"Nicholas", "nickName":"Nick"} ]}'.
+
+doctest() :-
+  % Match on nickName
+  handler(json([nickName='Bob']), context(headers(['TZ'('PST')]), _), Response), !,
+  ground(Response),
+  Response = '{"possibleNames": [ {"fullname":"William", "nickName":"Bob"} ]}'.
+  
+doctest() :-
+  % There is no ground!
+  handler(json([]), context(headers(['TZ'('PST')]), _), Response), !,
+  ground(Response),
+  Response = '{\n  "possibleNames": [\n    {"fullname":"Nicholas", "nickName":"Nick"},\n    {"fullname":"William", "nickName":"Bob"},\n    {"fullname":"William", "nickName":"Robert"},\n    {"fullname":"Steven", "nickName":"Steve"}\n  ]\n}'.
 ```
 
 #### Event Argument

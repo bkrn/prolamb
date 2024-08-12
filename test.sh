@@ -1,78 +1,72 @@
 #! /usr/bin/env bash
 set -e
 
-docker rm -f prolamb-localstack &> /dev/null || true
 ##──── build archives for test lambdas ───────────────────────────────────────────────────
 echo "Build Prolamb Docker Image"
-docker build --tag prolamb/prolamb:latest -f build.Dockerfile .
+docker build --build-arg SF_ODBC=false --build-arg PG_ODBC=false --tag prolamb/prolamb:latest -f build.Dockerfile .
 cd test/src
 
-dirlist=$(find $1 -mindepth 1 -maxdepth 1 -type d)
+dirlist=$(find . -mindepth 1 -maxdepth 1 -type d)
 for dir in $dirlist
 do
     echo "Build ${dir} test lambda .zip"
-    cd $dir && rm -f bundle.zip || true
+    cd $dir && rm -f *.zip || true
     docker run --rm -v $PWD:/dist prolamb/prolamb:latest &> /dev/null
+    cd ..
+done
+
+dirlist=$(find . -mindepth 1 -maxdepth 1 -type d)
+for dir in $dirlist
+do
+    echo "Build ${dir} static test lambda .zip"
+    cd $dir
+    docker run --rm -e "STATIC_MODULE=main" -e "BUNDLE_NAME=static_bundle.zip" -v $PWD:/dist prolamb/prolamb:latest &> /dev/null
     cd ..
 done
 cd ..
 
-##──── Build our slightly special verion of local stack ──────────────────────────────────
-# Localstack has a built in suffix check depending on the lambda run time
-# For provided it searches for .sh by default but we have a .pl so we edit that in
-# the source and pass it in
-cd extern/localstack
-echo "Build modified localstack image"
-docker build -f localstack.Dockerfile --tag prolamb/localstack:latest . &> /dev/null
-cd ../../..
-docker run -p 4574:4574 -v /var/run/docker.sock:/var/run/docker.sock \
-    --privileged --name prolamb-localstack \
-    prolamb/localstack >test/localstack.log &
-echo "Wait for local stack to come up"
-(tail -f -n0 test/localstack.log &) | grep -q 'Ready.'
-
 echo "Terraform Init"
-cd test/terraform
+cd terraform
 terraform init
+if [ "${CI}" = "true" ]; then
+    terraform import aws_lambda_function.simple_lambda ProlambSimple
+    terraform import aws_lambda_function.json_error_lambda ProlambJsonError
+    terraform import aws_lambda_function.simple_json_error_lambda ProlambSimpleJsonError
+    terraform import aws_lambda_function.error_lambda ProlambError
+    terraform import aws_lambda_function.bad_module_lambda ProlambBadModule
+    terraform import aws_lambda_function.bad_callable_lambda ProlambBadCallable
+    terraform import aws_lambda_function.context_lambda ProlambContext
+    terraform import aws_lambda_function.event_lambda ProlambEvent
+    terraform import aws_lambda_function.fail_lambda ProlambFail
+    terraform import aws_lambda_function.false_lambda ProlambFalse
+    terraform import aws_lambda_function.unbound_lambda ProlambUnbound
+    terraform import aws_lambda_function.simple_lambda_static ProlambSimpleStatic
+    terraform import aws_lambda_function.json_error_lambda_static ProlambJsonErrorStatic
+    terraform import aws_lambda_function.simple_json_error_lambda_static ProlambSimpleJsonErrorStatic
+    terraform import aws_lambda_function.error_lambda_static ProlambErrorStatic
+    terraform import aws_lambda_function.bad_module_lambda_static ProlambBadModuleStatic
+    terraform import aws_lambda_function.bad_callable_lambda_static ProlambBadCallableStatic
+    terraform import aws_lambda_function.context_lambda_static ProlambContextStatic
+    terraform import aws_lambda_function.event_lambda_static ProlambEventStatic
+    terraform import aws_lambda_function.fail_lambda_static ProlambFailStatic
+    terraform import aws_lambda_function.false_lambda_static ProlambFalseStatic
+    terraform import aws_lambda_function.unbound_lambda_static ProlambUnboundStatic
+fi
 terraform apply -auto-approve
 cd ..
 
 echo "Running tests"
 
-strip_status() {
-    local OPEN=0
-    local CLOSE=0
-    local S=""
-    for (( i=0; i<${#1}; i++ )); do
-        C=${1:$i:1}
-        if [[ "${C}" == "{" ]]; then 
-            ((++OPEN))
-        elif [[ "${C}" == "}" ]]; then 
-            ((++CLOSE)) 
-        fi
-        if (( OPEN > 0 )); then 
-            if (( OPEN >= CLOSE )) && [[ "${C}" != "\n" ]]; then 
-                local S="${S}${C}"
-            fi
-            if (( OPEN == CLOSE )); then 
-                i=${#1}
-            fi
-        fi
-    done
-    echo "${S}"
-}
-
 invoke_function() {
-    local RESULT=$(awslocal lambda invoke --function-name $1 --payload "$2" /dev/stdout)
-    strip_status "${RESULT}"
+    jq -Ssc '.[0]' <(aws lambda invoke --cli-binary-format raw-in-base64-out --function-name $1 --payload "$2" /dev/stdout)
 }
 
-# Success
+# Expect Success
 SIMPLE=$(invoke_function ProlambSimple '{}')
 CONTEXT=$(invoke_function ProlambContext '{}' | grep -o 'LANG-en_US.UTF-8')
 EVENT=$(invoke_function ProlambEvent '{ "fullName": "William" }')
 
-# Failure
+# Expect Failure
 ERROR=$(invoke_function ProlambError '{}')
 FAIL=$(invoke_function ProlambFail '{}')
 UNBOUND=$(invoke_function ProlambUnbound '{}')
@@ -82,17 +76,39 @@ SIMPLE_JSON_ERROR=$(invoke_function ProlambSimpleJsonError '{}')
 BAD_MODULE=$(invoke_function ProlambBadModule '{}')
 BAD_CALLABLE=$(invoke_function ProlambBadCallable '{}')
 
+# Expect Success
+STATIC_SIMPLE=$(invoke_function ProlambSimpleStatic '{}')
+STATIC_CONTEXT=$(invoke_function ProlambContextStatic '{}' | grep -o 'LANG-en_US.UTF-8')
+STATIC_EVENT=$(invoke_function ProlambEventStatic '{ "fullName": "William" }')
+
+# Expect Failure
+STATIC_ERROR=$(invoke_function ProlambErrorStatic '{}')
+STATIC_FAIL=$(invoke_function ProlambFailStatic '{}')
+STATIC_UNBOUND=$(invoke_function ProlambUnboundStatic '{}')
+STATIC_FALSE=$(invoke_function ProlambFalseStatic '{}')
+STATIC_JSON_ERROR=$(invoke_function ProlambJsonErrorStatic '{}')
+STATIC_SIMPLE_JSON_ERROR=$(invoke_function ProlambSimpleJsonErrorStatic '{}')
+STATIC_BAD_MODULE=$(invoke_function ProlambBadModuleStatic '{}')
+STATIC_BAD_CALLABLE=$(invoke_function ProlambBadCallableStatic '{}')
+
 echo "Adding assert"
 
 [ -f assert.sh ] || wget https://raw.github.com/lehmannro/assert.sh/v1.1/assert.sh -O assert.sh &>/dev/null
+
+md5sum --status -c checksums
+
 . assert.sh
 
 # Test success
 assert "echo '${SIMPLE}'" '{"fullName":"William"}'
 assert "echo '${CONTEXT}'" 'LANG-en_US.UTF-8'
 assert "echo '${EVENT}'" '{"nickName":"Bob"}'
+assert "echo '${STATIC_SIMPLE}'" '{"fullName":"William"}'
+assert "echo '${STATIC_CONTEXT}'" 'LANG-en_US.UTF-8'
+assert "echo '${STATIC_EVENT}'" '{"nickName":"Bob"}'
+assert "echo '${STATIC_BAD_MODULE}'" '{"fullName":"William"}'
 
-# Test failure
+#  Test failure
 assert "echo '${FAIL}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
 assert "echo '${FALSE}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
 assert "echo '${UNBOUND}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
@@ -101,5 +117,12 @@ assert "echo '${JSON_ERROR}'" '{"errorMessage":"I am JSON","errorType":"JsonErro
 assert "echo '${SIMPLE_JSON_ERROR}'" '{"errorMessage":"json([name=SomeError,message=Description of Error])","errorType":"HandlerException"}'
 assert "echo '${BAD_MODULE}'" '{"errorMessage":"Could not find module named grain","errorType":"InvalidHandlerModule"}'
 assert "echo '${BAD_CALLABLE}'" '{"errorMessage":"Could not find callable named hand","errorType":"InvalidHandlerCallable"}'
+assert "echo '${STATIC_FAIL}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+assert "echo '${STATIC_FALSE}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+assert "echo '${STATIC_UNBOUND}'" '{"errorMessage":"Handler predicate failed to resolve","errorType":"HandlerFailure"}'
+assert "echo '${STATIC_ERROR}'" '{"errorMessage":"This space intentionally left blank","errorType":"HandlerException"}'
+assert "echo '${STATIC_JSON_ERROR}'" '{"errorMessage":"I am JSON","errorType":"JsonError"}'
+assert "echo '${STATIC_SIMPLE_JSON_ERROR}'" '{"errorMessage":"json([name=SomeError,message=Description of Error])","errorType":"HandlerException"}'
+assert "echo '${STATIC_BAD_CALLABLE}'" '{"errorMessage":"Could not find callable named hand","errorType":"InvalidHandlerCallable"}'
 
 assert_end "simple invocation"

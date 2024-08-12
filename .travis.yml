@@ -5,41 +5,35 @@ sudo: required
 services:
   - docker
 
-cache:
-  bundler: true
-  directories:
-    - ${CACHE_FOLDER}
-
 env:
   global:
     - PATH=/opt/python/3.7.1/bin:$PATH
-    - CACHE_FOLDER=$HOME/docker-images
-    - CACHE_FILE=${CACHE_FOLDER}/prolamb-${TRAVIS_COMMIT}.tgz
+
+addons:
+  hosts:
+    - localhost
 
 before_install:
-  - curl -fSL "https://releases.hashicorp.com/terraform/0.12.13/terraform_0.12.13_linux_amd64.zip" -o terraform.zip
-  - sudo unzip terraform.zip -d /opt/terraform
-  - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
-  - rm -f terraform.zip
-  - curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
-  - python3 get-pip.py --user
-  - python3 -m pip install --upgrade --user "awscli"
-  - python3 -m pip install --upgrade --user "awscli-local"
-  - sudo apt-get install -y swi-prolog jq
+  - curl -fSL "https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip" -o terraform.zip &> /dev/null
+  - sudo unzip terraform.zip -d /opt/terraform &> /dev/null
+  - sudo ln -s /opt/terraform/terraform /usr/bin/terraform &> /dev/null
+  - rm -f terraform.zip &> /dev/null
+  - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"  &> /dev/null 
+  - unzip awscliv2.zip  &> /dev/null 
+  - sudo ./aws/install &> /dev/null
+  - rm -f awscliv2.zip &> /dev/null
+  - sudo add-apt-repository -y ppa:swi-prolog/stable &> /dev/null
+  - sudo apt-get update -y &> /dev/null
+  - sudo apt-get install -y swi-prolog jq &> /dev/null
   
 jobs:
   include:
-    - stage: "build"
-      script: 
-        - "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
-        - mkdir -p ${CACHE_FOLDER}
-        - docker save prolamb/prolamb:latest | gzip -c > ${CACHE_FILE}
     - stage: "test"
       script:
-        - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
-        - bash test.sh
-        - bash test.readme.sh
+        - "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
+        - ./test.sh
+        - ./test.readme.sh
     - stage: "deploy"
       script: 
-        - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
-        - bash deploy.sh
+        - "docker build --tag prolamb/prolamb:latest -f build.Dockerfile ."
+        - ./deploy.sh
